@@ -24,7 +24,7 @@ jobs:
       - name: Set Yaml
         run: |
           mkdir -p src/main/resources
-          echo "${{ secrets.APPLICATION_YAML }}" | base64 --decode > src/main/resources/application-prod.yml
+          echo "${{ secrets.APPLICATION_YAML }}" | base64 --decode > src/main/resources/application-prod.yaml
           find src
 
       # 클라우드 타입
