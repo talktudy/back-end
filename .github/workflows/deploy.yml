@@ -40,11 +40,11 @@ jobs:
           token: ${{ secrets.CLOUDTYPE_TOKEN }}
           project: super-backend/talktudy
           stage: main
-          yaml: |
+         yaml: |
             name: talktudy-backend
             app: java@11
             options:
-              ports: 8080
+              ports: ""
               env:
                 - name: SPRING_PROFILES_ACTIVE
                   value: prod
