@@ -24,6 +24,10 @@ jobs:
       - run: touch ./src/main/resources/application-prod.yaml
       - run: echo "${{ secrets.APPLICATION }}" > ./src/main/resources/application-prod.yaml
       - run: cat ./src/main/resources/application-prod.yaml
+      
+      # build
+      - name: Build with Gradle
+        run: ./gradlew build
 
       # 클라우드 타입
       - name: Connect deploy key
