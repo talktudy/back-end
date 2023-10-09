@@ -39,7 +39,8 @@ dependencies {
     annotationProcessor 'org.projectlombok:lombok'
 
     // jwt
-    implementation 'io.jsonwebtoken:jjwt:0.9.1'
+    implementation 'io.jsonwebtoken:jjwt-api:0.11.2'
+    runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.11.2', 'io.jsonwebtoken:jjwt-jackson:0.11.2'
 
     // Hibernate
     runtimeOnly 'com.h2database:h2'
@@ -63,12 +64,13 @@ dependencies {
     implementation 'io.springfox:springfox-boot-starter:3.0.0'
 
     // Spring Security
-//    implementation 'org.springframework.boot:spring-boot-starter-security'
-//    testImplementation 'org.springframework.security:spring-security-test'
+    implementation 'org.springframework.boot:spring-boot-starter-security'
+    testImplementation 'org.springframework.security:spring-security-test'
+    annotationProcessor "org.springframework.boot:spring-boot-configuration-processor"
 
     // Spring Cloud Starter AWS
-//    implementation 'org.springframework.cloud:spring-cloud-starter-aws:2.2.6.RELEASE'
-//    implementation 'com.amazonaws:aws-java-sdk-s3'
+    implementation 'org.springframework.cloud:spring-cloud-starter-aws:2.2.6.RELEASE'
+    implementation 'com.amazonaws:aws-java-sdk-s3'
 }
 
 tasks.named('test') {
