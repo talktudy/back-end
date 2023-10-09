@@ -21,7 +21,6 @@ jobs:
         uses: actions/checkout@v2 #해당 스텝에서 사용할 액션. {owner}/{repo}@{ref|version}의 형태
 
       # yaml 파일 생성  
-      - name: Set Yaml
       - run: touch ./src/main/resources/application-prod.yaml
       - run: echo "${{ secrets.APPLICATION }}" > ./src/main/resources/application-prod.yaml
       - run: cat ./src/main/resources/application-prod.yaml
