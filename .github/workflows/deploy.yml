@@ -1,0 +1,51 @@
+name: Deploy to cloudtype
+
+# on : Event에 대해 작성하는 부분. main에 push가 올 경우
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+# jobs : 여러 스텝으로 실행. 스텝은 프로세스의 단위. 
+jobs:
+  deploy:
+    name: Deploy
+    runs-on: ubuntu-latest #어떤 OS에서 실행될지 지정
+    
+    steps:
+      # Checkout
+      - name: Checkout
+        uses: actions/checkout@v2 #해당 스텝에서 사용할 액션. {owner}/{repo}@{ref|version}의 형태
+
+      # yaml 파일 생성  
+      - name: Set Yaml
+        run: |
+          mkdir -p src/main/resources
+          echo "${{ secrets.APPLICATION_YAML }}" | base64 --decode > src/main/resources/application-prod.yml
+          find src
+
+      # 클라우드 타입
+      - name: Connect deploy key
+        uses: cloudtype-github-actions/connect@v1
+        with:
+          token: ${{ secrets.CLOUDTYPE_TOKEN }}
+          ghtoken: ${{ secrets.GHP_TOKEN }}
+          
+      - name: Deploy
+        uses: cloudtype-github-actions/deploy@v1
+        with:
+          token: ${{ secrets.CLOUDTYPE_TOKEN }}
+          project: super-backend/talktudy
+          stage: main
+          yaml: |
+            name: talktudy-backend
+            app: java@11
+            options:
+              ports: 8080
+            context:
+              git:
+                url: git@github.com:${{ github.repository }}.git
+                ref: ${{ github.ref }}
