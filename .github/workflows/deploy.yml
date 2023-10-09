@@ -44,7 +44,7 @@ jobs:
             name: talktudy-backend
             app: java@11
             options:
-              ports: ""
+              ports: "8080"
               env:
                 - name: SPRING_PROFILES_ACTIVE
                   value: prod
