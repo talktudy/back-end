@@ -22,10 +22,9 @@ jobs:
 
       # yaml 파일 생성  
       - name: Set Yaml
-        run: |
-          mkdir -p src/main/resources
-          echo "${{ secrets.APPLICATION }}" > src/main/resources/application-prod.yaml
-          find src
+      - run: touch ./src/main/resources/application-prod.yaml
+      - run: echo "${{ secrets.APPLICATION }}" > ./src/main/resources/application-prod.yaml
+      - run: cat ./src/main/resources/application-prod.yaml
 
       # 클라우드 타입
       - name: Connect deploy key
