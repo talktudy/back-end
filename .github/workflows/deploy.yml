@@ -21,11 +21,11 @@ jobs:
         uses: actions/checkout@v2 #해당 스텝에서 사용할 액션. {owner}/{repo}@{ref|version}의 형태
 
       # yaml 파일 생성  
-      - name: Set Yaml
-        run: |
-          mkdir -p src/main/resources
-          echo "${{ secrets.APPLICATION_YAML }}" | base64 --decode > src/main/resources/application-prod.yaml
-          find src
+      # - name: Set Yaml
+      #   run: |
+      #     mkdir -p src/main/resources
+      #     echo "${{ secrets.APPLICATION_YAML }}" | base64 --decode > src/main/resources/application-prod.yaml
+      #     find src
 
       # 클라우드 타입
       - name: Connect deploy key
