@@ -45,6 +45,9 @@ jobs:
             app: java@11
             options:
               ports: 8080
+              env:
+                - name: SPRING_PROFILES_ACTIVE
+                  value: prod
             context:
               git:
                 url: git@github.com:${{ github.repository }}.git
