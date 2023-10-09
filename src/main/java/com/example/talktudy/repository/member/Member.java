@@ -37,9 +37,11 @@ public class Member {
     @Column(name = "description")
     private String description;
 
+    @Lob
     @Column(name = "profileImageUrl")
     private String profileImageUrl;
 
+    @Lob
     @Column(name = "portfolio")
     private String portfolio;
 

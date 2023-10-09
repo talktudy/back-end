@@ -52,12 +52,13 @@ public class AuthService {
 
         // 3. 프로필 이미지를 S3에 업로드(없으면 기본 이미지)
         member.setProfileImageUrl(
-                memberRequest.getProfileImage() == null ?
+                memberRequest.getProfileImage() == null ||
+                        memberRequest.getProfileImage().isEmpty() ?
                         defaultProfileImage : s3Uploader.uploadFile(memberRequest.getProfileImage(), S3Uploader.S3_DIR_MEMBER)
         );
 
         // 4. 포트폴리오를 S3에 업로드
-        if (memberRequest.getPortfolio() != null) {
+        if (memberRequest.getPortfolio() != null || !memberRequest.getPortfolio().isEmpty()) {
             member.setPortfolio(s3Uploader.uploadFile(memberRequest.getPortfolio(), S3Uploader.S3_DIR_PORTFOLIO));
         }
 
