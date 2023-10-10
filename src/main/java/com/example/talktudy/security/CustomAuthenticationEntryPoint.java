@@ -15,6 +15,6 @@ public class CustomAuthenticationEntryPoint implements AuthenticationEntryPoint 
     @Override
     public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException authEx)
             throws IOException, ServletException {
-        response.sendRedirect("/api/auth/not-secured");
+        response.sendRedirect("/api/exception/not-secured");
     }
 }
