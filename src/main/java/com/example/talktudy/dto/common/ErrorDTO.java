@@ -9,11 +9,8 @@ import org.springframework.http.HttpStatus;
 @Builder
 @Getter
 @Setter
-public class ResponseDTO {
+public class ErrorDTO {
     @ApiModelProperty(example = "응답 코드")
-    private final int code;
-
-    @ApiModelProperty(example = "응답 상태")
     private final HttpStatus status;
 
     @ApiModelProperty(example = "응답 메세지")

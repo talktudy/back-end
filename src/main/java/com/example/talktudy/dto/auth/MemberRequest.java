@@ -7,7 +7,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.web.multipart.MultipartFile;
 
-
 @Data
 public class MemberRequest {
     @ApiModelProperty(name = "email", value = "이메일", example = "test@test.com")

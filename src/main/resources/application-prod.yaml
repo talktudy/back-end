@@ -44,3 +44,4 @@ cloud:
 default:
   profile:
     image: ${DEFAULT_PROFILE_IMAGE}
+
