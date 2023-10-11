@@ -18,31 +18,32 @@ public class ExceptionControllerAdvice {
     @ResponseStatus(HttpStatus.NOT_FOUND)
     @ExceptionHandler(CustomNotFoundException.class)
     public ResponseEntity<ResponseDTO> handleNotFoundException(CustomNotFoundException nfe){
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ResponseDTO.builder().code(404).status(HttpStatus.NOT_FOUND).message(nfe.getMessage()).build());
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ResponseDTO.of(404, HttpStatus.NOT_FOUND, nfe.getMessage()));
     }
 
     @ResponseStatus(HttpStatus.NOT_ACCEPTABLE)
     @ExceptionHandler(CustomNotAcceptException.class)
     public ResponseEntity<ResponseDTO> handleNotAcceptException(CustomNotAcceptException nae){
-        return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body(ResponseDTO.builder().code(406).status(HttpStatus.NOT_ACCEPTABLE).message(nae.getMessage()).build());
+        return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body(ResponseDTO.of(406, HttpStatus.NOT_ACCEPTABLE, nae.getMessage()));
     }
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<ResponseDTO> handleIllegalArgumentException(IllegalArgumentException iae){
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ResponseDTO.builder().code(400).status(HttpStatus.BAD_REQUEST).message(iae.getMessage()).build());
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ResponseDTO.of(400, HttpStatus.BAD_REQUEST, iae.getMessage()));
     }
 
     @ResponseStatus(HttpStatus.NOT_FOUND)
     @ExceptionHandler(UsernameNotFoundException.class)
     public ResponseEntity<ResponseDTO> handleUserNameNotFoundException(UsernameNotFoundException unfe){
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ResponseDTO.builder().code(404).status(HttpStatus.NOT_FOUND).message(unfe.getMessage()).build());
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ResponseDTO.of(404, HttpStatus.NOT_FOUND, unfe.getMessage()));
     }
 
     @ResponseStatus(HttpStatus.UNAUTHORIZED)
     @ExceptionHandler(CustomExpiredJwtException.class)
     public ResponseEntity<ResponseDTO> handleExpiredJwtException(CustomExpiredJwtException exj) {
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(ResponseDTO.builder().code(401).status(HttpStatus.UNAUTHORIZED).message(exj.getMessage()).build());
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(ResponseDTO.of(401, HttpStatus.UNAUTHORIZED, exj.getMessage()));
     }
+
 
 } // end class
