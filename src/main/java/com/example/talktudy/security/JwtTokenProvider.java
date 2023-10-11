@@ -28,8 +28,8 @@ public class JwtTokenProvider {
     @Value("${jwt.secret-key-source}")
     private String secretKeySource;
     private Key secretKey;
-    private final long accessTokenValidTime = (60 * 1000) * 2; // (60 * 1000) * 30; // 30분
-    private final long refreshTokenValidTime = (60 * 1000) * 5; // (60 * 1000) * 60 * 24 * 3; // 3일
+    private final long accessTokenValidTime = (60 * 1000) * 5; // 5분 (60 * 1000) * 30; // 30분
+    private final long refreshTokenValidTime = (60 * 1000) * 10; // 10분 (60 * 1000) * 60 * 24 * 3; // 3일
     private final CustomUserDetailsService customUserDetailsService;
     private final RefreshTokenRepository refreshTokenRepository;
 
@@ -96,25 +96,27 @@ public class JwtTokenProvider {
 
     // 토큰이 유효한지 검증
     public boolean validateToken(String token, boolean isAccess) {
-        try {
-            Jwts.parserBuilder().setSigningKey(secretKey).build().parseClaimsJws(token);
-            return true;
-        } catch (SecurityException | MalformedJwtException e) {
-            log.info("Invalid JWT Token", e);
-        } catch (ExpiredJwtException e) {
-            log.info("Expired JWT Token", e);
-            throw new CustomExpiredJwtException((isAccess ? "[Access]" : "[Refresh]") + "만료된 토큰입니다.");
-        } catch (UnsupportedJwtException e) {
-            log.info("Unsupported JWT Token", e);
-        } catch (IllegalArgumentException e) {
-            log.info("JWT claims string is empty.", e);
-            throw new IllegalArgumentException("토큰 값이 없습니다.");
-        } catch (NullPointerException e){
-            log.error("JWT Token is empty.");
-            throw new NullPointerException("토큰이 null 입니다.");
-        }
+        Jwts.parserBuilder().setSigningKey(secretKey).build().parseClaimsJws(token);
+        return true;
 
-        return false;
+//        try {
+//
+//        } catch (SecurityException | MalformedJwtException e) {
+//            log.info("Invalid JWT Token", e);
+//        } catch (ExpiredJwtException e) {
+//            log.info("Expired JWT Token", e);
+//            throw new CustomExpiredJwtException((isAccess ? "[Access]" : "[Refresh]") + "만료된 토큰입니다.");
+//        } catch (UnsupportedJwtException e) {
+//            log.info("Unsupported JWT Token", e);
+//        } catch (IllegalArgumentException e) {
+//            log.info("JWT claims string is empty.", e);
+//            throw new IllegalArgumentException("토큰 값이 없습니다.");
+//        } catch (NullPointerException e){
+//            log.error("JWT Token is empty.");
+//            throw new NullPointerException("토큰이 null 입니다.");
+//        }
+//
+//        return false;
     }
 
     // 토큰에서 인증 정보 가져오기
