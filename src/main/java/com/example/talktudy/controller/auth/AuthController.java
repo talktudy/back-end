@@ -1,13 +1,10 @@
 package com.example.talktudy.controller.auth;
 
 import com.example.talktudy.dto.auth.LoginRequest;
-import com.example.talktudy.dto.auth.LoginResponse;
-import com.example.talktudy.dto.auth.MemberRequest;
+import com.example.talktudy.dto.auth.MemberDTO;
 import com.example.talktudy.dto.auth.TokenDTO;
 import com.example.talktudy.dto.common.ResponseDTO;
 import com.example.talktudy.service.auth.AuthService;
-import io.swagger.annotations.ApiImplicitParam;
-import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import lombok.RequiredArgsConstructor;
@@ -29,8 +26,8 @@ public class AuthController {
 
     @ApiOperation("회원가입 api - 회원 정보를 입력받아 회원 가입")
     @PostMapping(value = "/register")
-    public ResponseEntity<ResponseDTO> register(MemberRequest memberRequest) {
-        boolean isSuccess = authService.register(memberRequest);
+    public ResponseEntity<ResponseDTO> register(MemberDTO memberDTO) {
+        boolean isSuccess = authService.register(memberDTO);
 
         ResponseDTO responseDTO;
 
@@ -67,7 +64,7 @@ public class AuthController {
         return ResponseEntity.ok(authService.reissue(accessToken, refreshToken));
     }
 
-    @ApiOperation(value = "로그아웃 api - 로그아웃 기능", notes = "요청 헤더에 Authorization : access 토큰을 헤더에 추가")
+    @ApiOperation(value = "로그아웃 api - 로그아웃 기능", notes = "요청 헤더에 Authorization : access 토큰을 헤더에 추가. 로컬 스토리지에서 access, refresh 토큰 삭제 필요.")
     @PostMapping(value = "/logout")
     public ResponseEntity<ResponseDTO> logout(HttpServletRequest httpServletRequest) {
         String accessToken = httpServletRequest.getHeader("Authorization");

@@ -42,8 +42,8 @@ public class Member {
     private String profileImageUrl;
 
     @Lob
-    @Column(name = "portfolio")
-    private String portfolio;
+    @Column(name = "portfolioUrl")
+    private String portfolioUrl;
 
     // TODO : 탈퇴 여부 논의 필요!
 //    @Column(name = "portfolioUrl", nullable = false)

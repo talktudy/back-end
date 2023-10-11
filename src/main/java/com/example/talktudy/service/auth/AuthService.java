@@ -2,7 +2,7 @@ package com.example.talktudy.service.auth;
 
 import com.amazonaws.services.kms.model.NotFoundException;
 import com.example.talktudy.dto.auth.LoginRequest;
-import com.example.talktudy.dto.auth.MemberRequest;
+import com.example.talktudy.dto.auth.MemberDTO;
 import com.example.talktudy.dto.auth.TokenDTO;
 import com.example.talktudy.dto.common.ResponseDTO;
 import com.example.talktudy.exception.CustomNotFoundException;
@@ -44,8 +44,8 @@ public class AuthService {
     private String defaultProfileImage;
 
     @Transactional
-    public boolean register(MemberRequest memberRequest) {
-        String email = memberRequest.getEmail();
+    public boolean register(MemberDTO memberDTO) {
+        String email = memberDTO.getEmail();
 
         // 1. DB에 해당 이메일의 회원이 존재하는지 검사
         if (memberRepository.existsByEmail(email)) {
@@ -55,23 +55,25 @@ public class AuthService {
         // 2. 회원 객체 생성
         Member member = Member.builder()
                 .email(email)
-                .password(passwordEncoder.encode(memberRequest.getPassword()))
+                .password(passwordEncoder.encode(memberDTO.getPassword()))
                 .role(email.equals("admin@admin.com") ? Role.ROLE_ADMIN : Role.ROLE_USER)
-                .nickname(memberRequest.getNickname())
-                .interests(Enum.valueOf(Interests.class, memberRequest.getInterests()))
-                .description(memberRequest.getDescription())
+                .nickname(memberDTO.getNickname())
+                .interests(Enum.valueOf(Interests.class, memberDTO.getInterests()))
+                .description(memberDTO.getDescription())
                 .build();
 
         // 3. 프로필 이미지를 S3에 업로드(없으면 기본 이미지)
         member.setProfileImageUrl(
-                memberRequest.getProfileImage() == null ||
-                        memberRequest.getProfileImage().isEmpty() ?
-                        defaultProfileImage : s3Uploader.uploadFile(memberRequest.getProfileImage(), S3Uploader.S3_DIR_MEMBER)
+                memberDTO.getProfileImage() == null ||
+                        memberDTO.getProfileImage().isEmpty() ?
+                        defaultProfileImage : s3Uploader.uploadFile(memberDTO.getProfileImage(), S3Uploader.S3_DIR_MEMBER)
         );
 
         // 4. 포트폴리오를 S3에 업로드
-        if (memberRequest.getPortfolio() != null || !memberRequest.getPortfolio().isEmpty()) {
-            member.setPortfolio(s3Uploader.uploadFile(memberRequest.getPortfolio(), S3Uploader.S3_DIR_PORTFOLIO));
+        if (memberDTO.getPortfolio() != null || !memberDTO.getPortfolio().isEmpty()) {
+            if (memberDTO.getPortfolio().getOriginalFilename().length() > 0) {
+                member.setPortfolioUrl(s3Uploader.uploadFile(memberDTO.getPortfolio(), S3Uploader.S3_DIR_PORTFOLIO));
+            }
         }
 
         // 5. save 쿼리
