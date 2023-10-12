@@ -42,7 +42,7 @@ public class MemberService {
         member.setDescription(memberDTO.getDescription() != null ? memberDTO.getDescription() : member.getDescription());
 
         // 프로파일 수정을 했다면 대체하기
-        if (memberDTO.getProfileImage() != null || !memberDTO.getProfileImage().isEmpty()) {
+        if (memberDTO.getProfileImage() != null) {
             if (memberDTO.getProfileImage().getOriginalFilename().length() > 0) {
                 member.setProfileImageUrl(
                         s3Uploader.uploadFile(memberDTO.getProfileImage(), S3Uploader.S3_DIR_MEMBER)

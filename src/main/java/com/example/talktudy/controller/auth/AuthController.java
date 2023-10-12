@@ -5,8 +5,10 @@ import com.example.talktudy.dto.auth.MemberDTO;
 import com.example.talktudy.dto.auth.TokenDTO;
 import com.example.talktudy.dto.common.ResponseDTO;
 import com.example.talktudy.service.auth.AuthService;
+import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -20,7 +22,7 @@ import javax.validation.Valid;
 @RequestMapping("/api/auth")
 @RestController
 @RequiredArgsConstructor
-@ApiOperation("회원 Auth Rest API 컨트롤러")
+// @Tag(name = "auth-controller", description = "회원 등록, 로그인, 로그아웃 등 인증 인가와 관련된 Rest API 컨트롤러")
 public class AuthController {
     private final AuthService authService;
 
