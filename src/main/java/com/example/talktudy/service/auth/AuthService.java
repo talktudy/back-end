@@ -71,7 +71,7 @@ public class AuthService {
         );
 
         // 4. 포트폴리오를 S3에 업로드
-        if (memberDTO.getPortfolio() != null || !memberDTO.getPortfolio().isEmpty()) {
+        if (memberDTO.getPortfolio() != null) {
             if (memberDTO.getPortfolio().getOriginalFilename().length() > 0) {
                 member.setPortfolioUrl(s3Uploader.uploadFile(memberDTO.getPortfolio(), S3Uploader.S3_DIR_PORTFOLIO));
             }
