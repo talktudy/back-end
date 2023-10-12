@@ -50,7 +50,7 @@ public class AuthController {
 
     @ApiOperation(value = "로그인 api - 이메일과 패스워드를 입력받아 로그인", notes = "access token과 refresh token이 리턴되며, 클라이언트에 갖고 있습니다.")
     @PostMapping(value = "/login")
-    public ResponseEntity<TokenDTO> login(@RequestBody @Valid LoginRequest loginRequest) {
+    public ResponseEntity<TokenDTO> login(@RequestBody LoginRequest loginRequest) {
         return ResponseEntity.ok(authService.login(loginRequest));
     }
 

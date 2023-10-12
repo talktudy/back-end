@@ -1,19 +1,25 @@
 package com.example.talktudy.service.member;
 
 import com.example.talktudy.dto.auth.MemberDTO;
+import com.example.talktudy.dto.auth.PasswordRequest;
+import com.example.talktudy.dto.common.ResponseDTO;
 import com.example.talktudy.exception.CustomNotFoundException;
 import com.example.talktudy.repository.common.Interests;
 import com.example.talktudy.repository.member.Member;
 import com.example.talktudy.repository.member.MemberRepository;
 import com.example.talktudy.util.S3Uploader;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.RequestBody;
 
 @Service
 @RequiredArgsConstructor
 public class MemberService {
     private final MemberRepository memberRepository;
+    private final PasswordEncoder passwordEncoder;
     private final S3Uploader s3Uploader;
 
     @Transactional(readOnly = true)
@@ -54,5 +60,28 @@ public class MemberService {
         Member newMember = memberRepository.save(member);
 
         return MemberMapper.INSTANCE.memberEntityToDto(newMember);
+    }
+
+    @Transactional
+    public ResponseDTO changePassword(Long memberId, String oldPassword, String newPassword) {
+        // 1. memberId로 DB에서 회원을 찾는다.
+        Member member = memberRepository.findById(memberId).orElseThrow(() -> new CustomNotFoundException("회원을 찾을 수 없습니다."));
+
+        // 1-1. 패스워드를 입력하지 않았을 경우
+        if (oldPassword == null || newPassword == null) {
+            throw new IllegalArgumentException("패스워드를 모두 입력하지 않았습니다.");
+        }
+
+        // 2. 회원의 비밀번호를 찾아 암호화된 비밀번호가 일치하는지 확인한다.
+        if (!passwordEncoder.matches(oldPassword, member.getPassword())) {
+            throw new IllegalArgumentException("비밀번호가 일치하지 않습니다.");
+        }
+
+        // 3. 새 비밀번호로 변경한다.
+        member.setPassword(passwordEncoder.encode(newPassword));
+
+        memberRepository.save(member);
+
+        return ResponseDTO.of(200, HttpStatus.OK, "비밀번호 변경에 성공했습니다.");
     }
 } // end class
