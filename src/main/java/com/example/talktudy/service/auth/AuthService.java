@@ -19,6 +19,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -115,8 +116,10 @@ public class AuthService {
 
             return tokenDTO;
 
+        } catch (BadCredentialsException e) {
+            throw new CustomNotFoundException("로그인에 실패하였습니다. 회원이 존재하지 않습니다.");
         } catch (Exception e) {
-            throw new CustomNotFoundException("로그인에 실패하였습니다.");
+            throw new CustomNotFoundException("로그인에 실패하였습니다. 아이디와 비밀번호를 확인해주세요");
         }
     }
 
