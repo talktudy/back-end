@@ -14,6 +14,11 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
+
 @Service
 @Slf4j
 @RequiredArgsConstructor
@@ -25,39 +30,46 @@ public class StudyService {
 
     @Transactional
     public StudyResponse registerStudy(Long memberId, StudyRequest studyRequest) {
-        // 1. DB에서 회원을 찾는다.
-//        Member member = memberRepository.findById(memberId).orElseThrow(() -> new CustomNotFoundException("회원을 찾을 수 없습니다."));
-//
-//        // 2. Study 객체를 만든다.
-//        Study study = Study.builder()
-//                .member(member) // 개설자
-//                .title(studyRequest.getTitle()) // 제목
-//                .interests(Enum.valueOf(Interests.class, studyRequest.getInterests()))
-//                .isOpen(true) // 첫 스터디 등록시 무조건 모집중
-//                .description(studyRequest.getDescription())
-//                .maxCapacity(studyRequest.getMaxCapacity() + 1) // 총 인원수
-//                .currentCapacity(1) // 등록시 무조건 본인 인원수 +1
-//                .endDate(studyRequest.getEndDate()) // 마감 예정일
-//                .build();
-//
-//        // 3. Tag를 tag, study_tag 객체를 생성한다.
-//        // TODO : 기존에 존재하는 태그를 검사해야한다.
-//        Tag tag = Tag.builder().name(studyRequest.getTag()).build();
-//
-//        StudyTag studyTag = StudyTag.builder()
-//                .study(study)
-//                .tag(tag)
-//                .build();
-//
-//        // 4. 지원, 팀 채팅방을 개설한다.
-//
-//        // 5. DB에 등록한다.
-//        tagRepository.save(tag);
-//        studyRepository.save(study);
 
+        // 1. DB에서 회원을 찾는다.
+        Member member = memberRepository.findById(memberId).orElseThrow(() -> new CustomNotFoundException("회원을 찾을 수 없습니다."));
+
+        // 2. Study 객체를 만든다.
+        Study study = Study.builder()
+                .member(member) // 개설자
+                .title(studyRequest.getTitle()) // 제목
+                .interests(Enum.valueOf(Interests.class, studyRequest.getInterests()))
+                .isOpen(true) // 첫 스터디 등록시 무조건 모집중
+                .description(studyRequest.getDescription())
+                .maxCapacity(studyRequest.getMaxCapacity()) // 모집 인원
+                .currentCapacity(0) // 등록시 무조건 0
+                .endDate(studyRequest.getEndDate()) // 마감 예정일
+                .build();
+
+        // 3. Tag 테이블에서 기존 값이 있는지 검사한다. 값이 있으면 tag에는 저장하고 없으면 저장한다.
+        // 그렇게 만들어진 Tag 값을 StudyTag에 저장한다.
+        String[] tags = studyRequest.getTag().split(",");
+
+        List<StudyTag> studyTags = Arrays.stream(tags).map(
+                tagName -> {
+                    Tag tag = tagRepository.findByName(tagName).orElseGet(
+                            () -> tagRepository.save(
+                                    Tag.builder().name(tagName).build()
+                            )
+                    );
+
+                    return StudyTag.builder().study(study).tag(tag).build();
+                }
+        ).collect(Collectors.toList());
+
+        studyTagRepository.saveAll(studyTags);
+
+        // 4. TODO : 지원, 팀 채팅방을 개설한다.
+
+        // 5. Study 객체를 DB에 등록한다.
+        Study newStudy = studyRepository.save(study);
 
         // 6. Entity -> DTO 매핑한다.
-
-        return null;
+        return StudyMapper.INSTANCE.studyEntityToDto(newStudy, studyRequest.getTag(), member.getNickname());
     }
 } // end class

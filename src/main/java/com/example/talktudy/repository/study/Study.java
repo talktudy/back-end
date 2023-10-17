@@ -34,7 +34,7 @@ public class Study {
     @Enumerated(EnumType.STRING)
     private Interests interests;
 
-    @Column(name = "status", nullable = false)
+    @Column(name = "is_open", nullable = false)
     private boolean isOpen; // 모집중이면 True, 모집완료시 false
 
     @Lob
@@ -47,7 +47,7 @@ public class Study {
     @Column(name = "current_capacity", nullable = false)
     private int currentCapacity;
 
-    @Column(name = "views", nullable = false, columnDefinition = "DEFAULT 0 CHECK(amount) >= 0")
+    @Column(name = "views", nullable = false, columnDefinition = "INTEGER default 0")
     private int views;
 
     @CreationTimestamp

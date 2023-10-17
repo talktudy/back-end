@@ -16,13 +16,13 @@ public class StudyResponse {
     @ApiModelProperty(name = "startDate", value = "스터디 모집 시작 날짜, 년월일", example = "2023-10-10")
     private LocalDateTime startDate;
 
-    @ApiModelProperty(name = "endDate", value = "스터디 모집 마감 날짜, 년월일", example = "2023-10-12")
+    @ApiModelProperty(name = "endDate", value = "스터디 모집 마감 날짜, 년월일", example = "2023-10-17T00:00")
     private LocalDateTime endDate;
 
-    @ApiModelProperty(name = "maxCapacity", value = "총 모집 인원수", example = "5")
+    @ApiModelProperty(name = "maxCapacity", value = "총 인원수", example = "5")
     private int maxCapacity;
 
-    @ApiModelProperty(name = "currentCapacity", value = "현재 모집된 인원수", example = "2")
+    @ApiModelProperty(name = "currentCapacity", value = "현재 인원수", example = "2")
     private int currentCapacity;
 
     @ApiModelProperty(name = "description", value = "모집 소개. 에디터 사용으로 Html 문자열.", example = "<p>예시내용</p><strong>강조표시</strong>")

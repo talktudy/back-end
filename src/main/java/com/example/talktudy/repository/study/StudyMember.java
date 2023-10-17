@@ -17,13 +17,9 @@ import java.util.Set;
 @Table(name = "study_member")
 public class StudyMember {
     // study_apply의 apply_status가 Ok로 되었을때, 모집이 되었을때 모집된 멤버 엔티티
-
     @Id
     @Column(name = "study_member_id") @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long studyMemberId;
-
-//    @ManyToMany(mappedBy = "study_apply")
-//    private List<StudyApply> studyApplies;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "study_id")
