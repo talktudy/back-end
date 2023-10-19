@@ -3,12 +3,15 @@ package com.example.talktudy.service.study;
 import com.example.talktudy.dto.study.StudyRequest;
 import com.example.talktudy.dto.study.StudyResponse;
 import com.example.talktudy.exception.CustomNotFoundException;
+import com.example.talktudy.repository.chat.ChatRoom;
+import com.example.talktudy.repository.chat.ChatRoomRepository;
 import com.example.talktudy.repository.common.Interests;
 import com.example.talktudy.repository.member.Member;
 import com.example.talktudy.repository.member.MemberRepository;
 import com.example.talktudy.repository.study.*;
 import com.example.talktudy.repository.tag.Tag;
 import com.example.talktudy.repository.tag.TagRepository;
+import com.example.talktudy.service.chat.ChatService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -23,6 +26,7 @@ import java.util.stream.Collectors;
 @Slf4j
 @RequiredArgsConstructor
 public class StudyService {
+    private final ChatRoomRepository chatRoomRepository;
     private final StudyRepository studyRepository;
     private final MemberRepository memberRepository;
     private final StudyTagRepository studyTagRepository;
@@ -65,6 +69,22 @@ public class StudyService {
         studyTagRepository.saveAll(studyTags);
 
         // 4. TODO : 지원, 팀 채팅방을 개설한다.
+        // 지원
+        ChatRoom applyChatRoom = ChatRoom.builder()
+                .name(study.getTitle())
+                .isStudyApply(true)
+                .study(study)
+                .build();
+
+        // 팀 채팅방
+        ChatRoom chatRoom = ChatRoom.builder()
+                .name(study.getTitle())
+                .isStudyApply(false)
+                .study(study)
+                .build();
+
+        chatRoomRepository.save(applyChatRoom);
+        chatRoomRepository.save(chatRoom);
 
         // 5. Study 객체를 DB에 등록한다.
         Study newStudy = studyRepository.save(study);

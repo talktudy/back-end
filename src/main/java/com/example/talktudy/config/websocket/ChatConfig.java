@@ -23,11 +23,11 @@ public class ChatConfig implements WebSocketMessageBrokerConfigurer {
 
     @Override
     public void configureMessageBroker(MessageBrokerRegistry registry) {
-        // 메세지를 구독하는 요청 url. 즉, 메세지를 받을 때
-        registry.enableSimpleBroker("/sub");
+        // 메세지를 구독하는 요청 url. 즉, 메세지를 받을 때. 관습적으로 1:1은 queue, 1:N은 topic
+        registry.enableSimpleBroker("/queue", "/topic");
 
-        // 메세지를 발행하는 요청 url. 즉, 메세지를 보낼 떄
-        registry.setApplicationDestinationPrefixes("/pub");
+        // 메세지를 발행하는 요청 url. 즉, 메세지를 보낼 떄. 메세지의 어떤 처리나 가공이 필요할때
+        registry.setApplicationDestinationPrefixes("/app");
     }
 
     @Override
