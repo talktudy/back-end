@@ -1,5 +1,6 @@
 package com.example.talktudy.controller.study;
 
+import com.example.talktudy.dto.common.ResponseDTO;
 import com.example.talktudy.dto.study.StudyRequest;
 import com.example.talktudy.dto.study.StudyResponse;
 import com.example.talktudy.security.CustomUserDetails;
@@ -29,6 +30,12 @@ public class StudyController {
         return ResponseEntity.ok(studyService.registerStudy(customUserDetails.getMemberId(), studyRequest));
     }
 
+    @ApiOperation("스터디 수정 api - 헤더에 토큰을 받고, 스터디 정보를 입력받아 스터디 글 수정")
+    @PutMapping(value = "/update/{studyId}")
+    public ResponseEntity<StudyResponse> updateStudy(@ApiIgnore @AuthenticationPrincipal CustomUserDetails customUserDetails, @PathVariable Long studyId, @RequestBody StudyRequest studyRequest) {
+        return ResponseEntity.ok(studyService.updateStudy(customUserDetails.getMemberId(), studyId, studyRequest));
+    }
+
     @ApiOperation(value = "스터디 리스트 조회 api - 모든 스터디 리스트 조회, 페이지네이션 가능", notes = "쿼리스트링으로 orderby=views(maxCapacity, endDate..)로 내림차순 조회 가능. 페이지네이션 : size=4, page=1..")
     @GetMapping
     public ResponseEntity<Page<StudyResponse>> getStudyList(
@@ -48,6 +55,12 @@ public class StudyController {
     @GetMapping("/{studyId}")
     public ResponseEntity<StudyResponse> getStudy(@PathVariable Long studyId) {
         return ResponseEntity.ok(studyService.getStudy(studyId));
+    }
+
+    @ApiOperation("스터디 모집 마감 api - 토큰의 헤더를 받고, 스터디의 모집을 마감한다.")
+    @PostMapping("/{studyId}/close")
+    public ResponseEntity<ResponseDTO> closeStudy(@ApiIgnore @AuthenticationPrincipal CustomUserDetails customUserDetails, @PathVariable Long studyId) {
+        return ResponseEntity.ok(studyService.closeStudy(customUserDetails.getMemberId(), studyId));
     }
 
 
