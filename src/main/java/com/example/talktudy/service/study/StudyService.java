@@ -1,5 +1,6 @@
 package com.example.talktudy.service.study;
 
+import com.example.talktudy.dto.common.ResponseDTO;
 import com.example.talktudy.dto.study.StudyRequest;
 import com.example.talktudy.dto.study.StudyResponse;
 import com.example.talktudy.exception.CustomNotFoundException;
@@ -16,9 +17,14 @@ import com.example.talktudy.service.tag.TagService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.*;
+import org.springframework.http.HttpStatus;
+import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -118,5 +124,41 @@ public class StudyService {
     public StudyResponse getStudy(Long studyId) {
         Study study = studyRepository.findById(studyId).orElseThrow(() -> new CustomNotFoundException("스터디 정보를 찾을 수 없습니다."));
         return StudyMapper.INSTANCE.studyEntityToDto(study, study.getTagNamesAsString(), study.getMember().getNickname());
+    }
+
+    @Transactional
+    public ResponseDTO closeStudy(Long memberId, Long studyId) {
+        // 1. DB에서 개설자 회원과 스터디를 찾는다.
+        Member member = memberRepository.findById(memberId).orElseThrow(() -> new CustomNotFoundException("회원을 찾을 수 없습니다."));
+
+        Study study = studyRepository.findById(studyId).orElseThrow(() -> new CustomNotFoundException("스터디 정보를 찾을 수 없습니다."));
+
+        // 2. 해당 회원이 스터디의 개설자인지 확인한다.
+        if (!member.equals(study.getMember())) throw new BadCredentialsException("접근 권한이 없습니다.");
+
+        // 3. 스터디의 마감 상태를 변경한다.
+        study.setOpen(false);
+
+        studyRepository.save(study);
+
+        return ResponseDTO.of(200, HttpStatus.OK, "스터디가 모집 완료 상태로 변경되었습니다.");
+    }
+
+    // 매일 자정에 실행되며 오늘 자정이 모집 마감일인 스터디 리스트를 찾아 모두 마감시킨다.
+    @Scheduled(cron = "0 0 0 * * *")
+    public void closeStudyEveryDay() {
+        LocalDateTime time = LocalDate.now().atStartOfDay(); // 년,월,일(자정)까지만 가져온다.
+        log.info("시간 : " + time);
+
+        List<Study> studies = studyRepository.findAllByEndDate(time);
+
+        if(studies != null) {
+            for(Study study : studies) {
+                study.setOpen(false);
+                log.info("모집 마감되는 스터디 아이디 : " + study.getStudyId());
+            }
+
+            studyRepository.saveAll(studies);
+        }
     }
 } // end class
