@@ -9,5 +9,5 @@ import org.mapstruct.factory.Mappers;
 public interface StudyMemberMapper {
     StudyMemberMapper INSTANCE = Mappers.getMapper(StudyMemberMapper.class);
 
-    StudyApplyDTO studyMemberEntityToDto(StudyMember studyMember, String interests, String nickname, String profileImageUrl);
+    StudyApplyDTO studyMemberEntityToDto(StudyMember studyMember, Long memberId, String interests, String nickname, String profileImageUrl);
 }

@@ -3,6 +3,7 @@ package com.example.talktudy.service.study;
 import com.example.talktudy.dto.study.StudyApplyDTO;
 import com.example.talktudy.exception.CustomNotFoundException;
 import com.example.talktudy.repository.common.ApplyStatus;
+import com.example.talktudy.repository.common.Interests;
 import com.example.talktudy.repository.member.Member;
 import com.example.talktudy.repository.member.MemberRepository;
 import com.example.talktudy.repository.study.Study;
@@ -63,6 +64,7 @@ public class StudyMemberService {
 
         return StudyMemberMapper.INSTANCE.studyMemberEntityToDto(
                 newStudyMember,
+                newStudyMember.getMember().getMemberId(),
                 newStudyMember.getMember().getInterests().toString(),
                 newStudyMember.getMember().getNickname(),
                 newStudyMember.getMember().getProfileImageUrl());
@@ -88,6 +90,7 @@ public class StudyMemberService {
                         studyMember ->
                                 StudyMemberMapper.INSTANCE.studyMemberEntityToDto(
                                         studyMember,
+                                        studyMember.getMember().getMemberId(),
                                         studyMember.getMember().getInterests().toString(),
                                         studyMember.getMember().getNickname(),
                                         studyMember.getMember().getProfileImageUrl()))
@@ -96,6 +99,60 @@ public class StudyMemberService {
         return studyApplyResponse;
     }
 
+    @Transactional
+    public StudyApplyDTO changeApplyStatus(Long writerMemberId, Long studyId, Long applyMemberId, String applyStatus) {
+        // 1. DB에서 개설자 회원과 스터디를 찾는다.
+        Member member = memberRepository.findById(writerMemberId).orElseThrow(() -> new CustomNotFoundException("회원을 찾을 수 없습니다."));
 
+        Study study = studyRepository.findById(studyId).orElseThrow(() -> new CustomNotFoundException("스터디 정보를 찾을 수 없습니다."));
 
+        // 2. 해당 회원이 스터디의 개설자인지 확인한다.
+        if (!member.equals(study.getMember())) throw new BadCredentialsException("접근 권한이 없습니다.");
+
+        // 3. 신청한 회원이 DB에 존재하는지 확인한다.
+        Member applyMember = memberRepository.findById(applyMemberId).orElseThrow(() -> new CustomNotFoundException("신청 회원을 찾을 수 없습니다."));
+
+        // 4. 신청한 회원이 스터디 멤버에 존재하는지 찾고, 스터디 멤버에서 해당 회원의 applyStatus를 변경한다.
+        StudyMember newStudyMember = null;
+
+        List<StudyMember> studyMembers = studyMemberRepository.findAllByStudy(study);
+
+        for(StudyMember studyMember : studyMembers) {
+            if (studyMember.getMember().equals(applyMember)) {
+                // 5. Status에 맞춰 스터디의 현재 인원수를 변경한다.
+                ApplyStatus status = Enum.valueOf(ApplyStatus.class, applyStatus);
+
+                switch (status) {
+                    case ACCEPTED: // 기존에도 수락됨이었다면, 인원수 변경 X
+                        if (studyMember.getApplyStatus() != ApplyStatus.ACCEPTED)
+                            study.setCurrentCapacity(study.getCurrentCapacity() + 1);
+                        break;
+                    case REJECTED: // 거절이면, 인원수 변경 X
+                        break;
+                    case PENDING: // 수락에서 대기가 오면, 인원수 하락. 거절에서 대기가 오면, 인원수 변경 X
+                        if (studyMember.getApplyStatus() == ApplyStatus.ACCEPTED)
+                            study.setCurrentCapacity(study.getCurrentCapacity() - 1);
+                        break;
+                }
+
+                studyMember.setApplyStatus(Enum.valueOf(ApplyStatus.class, applyStatus)); // applyStatus 변경
+                newStudyMember = studyMember;
+
+                break;
+            }
+        }
+
+        studyRepository.save(study);
+
+        // 6. 스터디 멤버를 저장한다.
+        newStudyMember = studyMemberRepository.save(newStudyMember);
+
+        return StudyMemberMapper.INSTANCE.studyMemberEntityToDto(
+                newStudyMember,
+                newStudyMember.getMember().getMemberId(),
+                newStudyMember.getMember().getInterests().toString(),
+                newStudyMember.getMember().getNickname(),
+                newStudyMember.getMember().getProfileImageUrl());
+
+    }
 } // end class
