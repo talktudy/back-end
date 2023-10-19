@@ -29,25 +29,7 @@ public class AuthController {
     @ApiOperation("회원가입 api - 회원 정보를 입력받아 회원 가입")
     @PostMapping(value = "/register")
     public ResponseEntity<ResponseDTO> register(MemberDTO memberDTO) {
-        boolean isSuccess = authService.register(memberDTO);
-
-        ResponseDTO responseDTO;
-
-        if (isSuccess) {
-            responseDTO = ResponseDTO.builder()
-                    .code(200)
-                    .status(HttpStatus.OK)
-                    .message("회원가입에 성공했습니다.")
-                    .build();
-        } else {
-            responseDTO = ResponseDTO.builder()
-                    .code(400)
-                    .status(HttpStatus.BAD_REQUEST)
-                    .message("회원가입에 실패했습니다.")
-                    .build();
-        }
-
-        return ResponseEntity.status(responseDTO.getStatus()).body(responseDTO);
+        return ResponseEntity.ok(authService.register(memberDTO));
     }
 
     @ApiOperation(value = "로그인 api - 이메일과 패스워드를 입력받아 로그인", notes = "access token과 refresh token이 리턴되며, 클라이언트에 갖고 있습니다.")
