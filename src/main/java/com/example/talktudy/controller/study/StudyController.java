@@ -30,6 +30,12 @@ public class StudyController {
         return ResponseEntity.ok(studyService.registerStudy(customUserDetails.getMemberId(), studyRequest));
     }
 
+    @ApiOperation("스터디 수정 api - 헤더에 토큰을 받고, 스터디 정보를 입력받아 스터디 글 수정")
+    @PutMapping(value = "/update/{studyId}")
+    public ResponseEntity<StudyResponse> updateStudy(@ApiIgnore @AuthenticationPrincipal CustomUserDetails customUserDetails, @PathVariable Long studyId, @RequestBody StudyRequest studyRequest) {
+        return ResponseEntity.ok(studyService.updateStudy(customUserDetails.getMemberId(), studyId, studyRequest));
+    }
+
     @ApiOperation(value = "스터디 리스트 조회 api - 모든 스터디 리스트 조회, 페이지네이션 가능", notes = "쿼리스트링으로 orderby=views(maxCapacity, endDate..)로 내림차순 조회 가능. 페이지네이션 : size=4, page=1..")
     @GetMapping
     public ResponseEntity<Page<StudyResponse>> getStudyList(

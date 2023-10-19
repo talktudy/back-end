@@ -59,7 +59,7 @@ public class StudyService {
 
         // 3. Tag 테이블에서 기존 값이 있는지 검사한다. 값이 있으면 tag에는 저장하고 없으면 저장한다.
         // 그렇게 만들어진 Tag 값을 StudyTag에 저장한다.
-        tagService.createStudyTags(studyRequest.getTag().split(","), study);
+        tagService.createStudyTags(studyRequest.getTag().split(","), study, false);
 
         // 4. 지원, 팀 채팅방을 개설한다.
         // 지원
@@ -80,6 +80,48 @@ public class StudyService {
         chatRoomRepository.save(chatRoom);
 
         // 5. Study 객체를 DB에 등록한다.
+        Study newStudy = studyRepository.save(study);
+
+        // 6. Entity -> DTO 매핑한다.
+        return StudyMapper.INSTANCE.studyEntityToDto(newStudy, studyRequest.getTag(), member.getNickname());
+    }
+
+    @Transactional
+    public StudyResponse updateStudy(Long memberId, Long studyId, StudyRequest studyRequest) {
+        // 1. DB에서 개설자 회원과 스터디를 찾는다.
+        Member member = memberRepository.findById(memberId).orElseThrow(() -> new CustomNotFoundException("회원을 찾을 수 없습니다."));
+
+        Study study = studyRepository.findById(studyId).orElseThrow(() -> new CustomNotFoundException("스터디 정보를 찾을 수 없습니다."));
+
+        // 2. 해당 회원이 스터디의 개설자인지 확인한다.
+        if (!member.equals(study.getMember())) throw new BadCredentialsException("접근 권한이 없습니다.");
+
+        // 3. 총인원이 5, 현재인원수가 3인데 총 인원을 2,1 즉 3아래로 변경하려는 경우에는 예외처리
+        if (study.getCurrentCapacity() > studyRequest.getMaxCapacity()) {
+            throw new IllegalArgumentException("총 인원은 현재 인원수보다 적게 변경할 수 없습니다. 현재 인원 : " + study.getCurrentCapacity());
+        }
+
+        study.setMaxCapacity(studyRequest.getMaxCapacity());
+
+        // 4. 스터디 정보를 업데이트 한다.
+        study.setTitle(studyRequest.getTitle() != null ? studyRequest.getTitle() : study.getTitle());
+        study.setInterests(studyRequest.getInterests() != null ? Enum.valueOf(Interests.class, studyRequest.getInterests()) : study.getInterests());
+
+        // 5. 마감되었는데 바꾸는 경우, 모집 완료를 모집 중으로 다시 바꾼다.
+        if (study.isOpen() == false) {
+            study.setOpen(true);
+        }
+
+        study.setEndDate(studyRequest.getEndDate());
+        study.setDescription(studyRequest.getDescription() != null ? studyRequest.getDescription() : study.getDescription());
+
+        // 6. Tag 테이블에서 기존 값이 있는지 검사한다. 값이 있으면 tag에는 저장하고 없으면 저장한다.
+        // 그렇게 만들어진 Tag 값을 StudyTag에 저장한다.
+        tagService.createStudyTags(studyRequest.getTag().split(","), study, true);
+
+        // 7. TODO : 팀 채팅방의 정보도 변경?
+
+        // 8. Study 객체를 DB에 등록한다.
         Study newStudy = studyRepository.save(study);
 
         // 6. Entity -> DTO 매핑한다.
@@ -120,10 +162,15 @@ public class StudyService {
         return new PageImpl<>(studyResponses, pageable, studyResponses.size());
     }
 
-    @Transactional(readOnly = true)
+    @Transactional
     public StudyResponse getStudy(Long studyId) {
         Study study = studyRepository.findById(studyId).orElseThrow(() -> new CustomNotFoundException("스터디 정보를 찾을 수 없습니다."));
-        return StudyMapper.INSTANCE.studyEntityToDto(study, study.getTagNamesAsString(), study.getMember().getNickname());
+
+        // 조회수 증가
+        study.setViews(study.getViews() + 1);
+        Study newStudy = studyRepository.save(study);
+
+        return StudyMapper.INSTANCE.studyEntityToDto(newStudy, newStudy.getTagNamesAsString(), newStudy.getMember().getNickname());
     }
 
     @Transactional
@@ -161,4 +208,6 @@ public class StudyService {
             studyRepository.saveAll(studies);
         }
     }
+
+
 } // end class

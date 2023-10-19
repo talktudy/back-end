@@ -17,11 +17,11 @@ public class StudyTag { // study, tag 매핑 테이블
     @Column(name = "study_tag_id") @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long studyTagId;
 
-    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "study_id")
     private Study study;
 
-    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "tag_id")
     private Tag tag;
 
