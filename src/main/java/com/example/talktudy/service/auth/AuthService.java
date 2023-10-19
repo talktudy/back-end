@@ -45,12 +45,12 @@ public class AuthService {
     private String defaultProfileImage;
 
     @Transactional
-    public boolean register(MemberDTO memberDTO) {
+    public ResponseDTO register(MemberDTO memberDTO) {
         String email = memberDTO.getEmail();
 
         // 1. DB에 해당 이메일의 회원이 존재하는지 검사
         if (memberRepository.existsByEmail(email)) {
-            return false;
+            throw new IllegalArgumentException("회원이 이미 존재합니다.");
         }
 
         // 2. 회원 객체 생성
@@ -78,7 +78,10 @@ public class AuthService {
         }
 
         // 5. save 쿼리
-        return memberRepository.save(member) != null;
+        memberRepository.save(member);
+
+        return ResponseDTO.of(200, HttpStatus.OK, "회원 등록에 성공하였습니다.");
+
     }
 
     @Transactional

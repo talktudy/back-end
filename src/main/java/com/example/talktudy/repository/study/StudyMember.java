@@ -33,4 +33,7 @@ public class StudyMember {
     @Enumerated(EnumType.STRING)
     private ApplyStatus applyStatus;
 
+    @Column(name = "apply_text")
+    private String applyText;
+
 }// end class

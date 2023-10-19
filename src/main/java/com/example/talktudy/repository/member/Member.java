@@ -4,6 +4,7 @@ import com.example.talktudy.repository.common.Interests;
 import lombok.*;
 
 import javax.persistence.*;
+import java.util.Objects;
 
 @Getter
 @Setter
@@ -48,4 +49,12 @@ public class Member {
     // TODO : 탈퇴 여부 논의 필요!
 //    @Column(name = "portfolioUrl", nullable = false)
 //    private boolean withdrawal;
+
+    // 객체 주소 비교가 아닌 객체의 아이디가 동등한지 비교로 재정의 하기 위해 오버라이딩
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Member)) return false;
+        Member member = (Member) o;
+        return Objects.equals(this.getMemberId(), member.getMemberId());
+    }
 }
