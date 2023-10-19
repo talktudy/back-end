@@ -29,7 +29,7 @@ public class StudyController {
         return ResponseEntity.ok(studyService.registerStudy(customUserDetails.getMemberId(), studyRequest));
     }
 
-    @ApiOperation(value = "스터디 리스트 조회 api - 모든 스터디 리스트 조회, 페이지네이션 가능", notes = "쿼리스트링으로 orderby=views(maxCapacity, endDate..)로 내림차순 조회 가능")
+    @ApiOperation(value = "스터디 리스트 조회 api - 모든 스터디 리스트 조회, 페이지네이션 가능", notes = "쿼리스트링으로 orderby=views(maxCapacity, endDate..)로 내림차순 조회 가능. 페이지네이션 : size=4, page=1..")
     @GetMapping
     public ResponseEntity<Page<StudyResponse>> getStudyList(
             Pageable pageable,
@@ -38,7 +38,7 @@ public class StudyController {
         return ResponseEntity.ok(studyService.getStudyList(pageable, orderCriteria));
     }
 
-    @ApiOperation("스터디 리스트 모집중 별 조회 api - 모든 스터디 리스트 모집중 상태만 조회, 페이지네이션 가능")
+    @ApiOperation("스터디 리스트 모집중 별 조회 api - 모든 스터디 리스트 모집중 상태만 조회, 페이지네이션 가능. 페이지네이션 : size=4, page=1..")
     @GetMapping("/open")
     public ResponseEntity<Page<StudyResponse>> getStudyListByOpen(Pageable pageable) {
         return ResponseEntity.ok(studyService.getStudyListByOpen(pageable));

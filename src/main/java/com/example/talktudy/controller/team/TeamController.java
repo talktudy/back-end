@@ -29,7 +29,7 @@ public class TeamController {
         return ResponseEntity.ok(teamService.registerTeam(customUserDetails.getMemberId(), teamRequest));
     }
 
-    @ApiOperation(value = "채팅방 리스트 조회 api - 모든 채팅팀 리스트 조회, 페이지네이션 가능", notes = "쿼리스트링으로 orderby=views(endDate..)로 내림차순 조회 가능")
+    @ApiOperation(value = "채팅방 리스트 조회 api - 모든 채팅팀 리스트 조회, 페이지네이션 가능", notes = "쿼리스트링으로 orderby=views(endDate..)로 내림차순 조회 가능. 페이지네이션 : size=4, page=1..")
     @GetMapping
     public ResponseEntity<Page<TeamResponse>> getTeamList(
             Pageable pageable,
