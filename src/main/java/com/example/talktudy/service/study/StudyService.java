@@ -12,6 +12,7 @@ import com.example.talktudy.repository.study.*;
 import com.example.talktudy.repository.tag.Tag;
 import com.example.talktudy.repository.tag.TagRepository;
 import com.example.talktudy.service.chat.ChatService;
+import com.example.talktudy.service.tag.TagService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -29,8 +30,7 @@ public class StudyService {
     private final ChatRoomRepository chatRoomRepository;
     private final StudyRepository studyRepository;
     private final MemberRepository memberRepository;
-    private final StudyTagRepository studyTagRepository;
-    private final TagRepository tagRepository;
+    private final TagService tagService;
 
     @Transactional
     public StudyResponse registerStudy(Long memberId, StudyRequest studyRequest) {
@@ -52,23 +52,9 @@ public class StudyService {
 
         // 3. Tag 테이블에서 기존 값이 있는지 검사한다. 값이 있으면 tag에는 저장하고 없으면 저장한다.
         // 그렇게 만들어진 Tag 값을 StudyTag에 저장한다.
-        String[] tags = studyRequest.getTag().split(",");
+        tagService.createStudyTags(studyRequest.getTag().split(","), study);
 
-        List<StudyTag> studyTags = Arrays.stream(tags).map(
-                tagName -> {
-                    Tag tag = tagRepository.findByName(tagName).orElseGet(
-                            () -> tagRepository.save(
-                                    Tag.builder().name(tagName).build()
-                            )
-                    );
-
-                    return StudyTag.builder().study(study).tag(tag).build();
-                }
-        ).collect(Collectors.toList());
-
-        studyTagRepository.saveAll(studyTags);
-
-        // 4. TODO : 지원, 팀 채팅방을 개설한다.
+        // 4. 지원, 팀 채팅방을 개설한다.
         // 지원
         ChatRoom applyChatRoom = ChatRoom.builder()
                 .name(study.getTitle())
