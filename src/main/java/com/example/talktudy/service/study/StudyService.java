@@ -15,9 +15,7 @@ import com.example.talktudy.service.chat.ChatService;
 import com.example.talktudy.service.tag.TagService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -46,7 +44,7 @@ public class StudyService {
                 .member(member) // 개설자
                 .title(studyRequest.getTitle()) // 제목
                 .interests(Enum.valueOf(Interests.class, studyRequest.getInterests()))
-                .isOpen(true) // 첫 스터디 등록시 무조건 모집중
+                .open(true) // 첫 스터디 등록시 무조건 모집중
                 .description(studyRequest.getDescription())
                 .maxCapacity(studyRequest.getMaxCapacity()) // 모집 인원
                 .currentCapacity(0) // 등록시 무조건 0
@@ -83,9 +81,16 @@ public class StudyService {
     }
 
     @Transactional(readOnly = true)
-    public Page<StudyResponse> getStudyList(Pageable pageable) {
-        // 1. DB에서 스터디 리스트를 찾는다
-        Page<Study> studyPage = studyRepository.findAll(pageable);
+    public Page<StudyResponse> getStudyList(Pageable pageable, String orderCriteria) {
+        Page<Study> studyPage = null;
+
+        if (orderCriteria == null) { // 1. 전체 리스트 조회
+            studyPage = studyRepository.findAll(pageable);
+        }
+        else { // 2. orderCriteria가 내림차 순으로 조회(조회수, 총인원수 등)
+            pageable = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), Sort.Direction.DESC, orderCriteria);
+            studyPage = studyRepository.findAll(pageable);
+        }
 
         // 2. 응답 형태로 변환해 리턴한다.
         List<StudyResponse> studyResponses = studyPage.stream()
@@ -93,5 +98,25 @@ public class StudyService {
                 .collect(Collectors.toList());
 
         return new PageImpl<>(studyResponses, pageable, studyResponses.size());
+    }
+
+    @Transactional(readOnly = true)
+    public Page<StudyResponse> getStudyListByOpen(Pageable pageable) {
+
+        // 1. isOpen이 true인 모집중인 데이터만 조회
+        Page<Study> studyPage = studyRepository.findAllByOpenTrue(pageable);
+
+        // 2. 응답 형태로 변환해 리턴한다.
+        List<StudyResponse> studyResponses = studyPage.stream()
+                .map(study -> StudyMapper.INSTANCE.studyEntityToDto(study, study.getTagNamesAsString(), study.getMember().getNickname()))
+                .collect(Collectors.toList());
+
+        return new PageImpl<>(studyResponses, pageable, studyResponses.size());
+    }
+
+    @Transactional(readOnly = true)
+    public StudyResponse getStudy(Long studyId) {
+        Study study = studyRepository.findById(studyId).orElseThrow(() -> new CustomNotFoundException("스터디 정보를 찾을 수 없습니다."));
+        return StudyMapper.INSTANCE.studyEntityToDto(study, study.getTagNamesAsString(), study.getMember().getNickname());
     }
 } // end class

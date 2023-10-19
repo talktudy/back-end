@@ -19,9 +19,7 @@ import com.example.talktudy.service.tag.TagService;
 import com.example.talktudy.service.tag.TeamMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -72,9 +70,15 @@ public class TeamService {
     }
 
     @Transactional(readOnly = true)
-    public Page<TeamResponse> getTeamList(Pageable pageable) {
-        // 1. DB에서 팀 리스트를 찾는다
-        Page<Team> teamPage = teamRepository.findAll(pageable);
+    public Page<TeamResponse> getTeamList(Pageable pageable, String orderCriteria) {
+        Page<Team> teamPage = null;
+
+        if (orderCriteria == null) { // 1. 전체 리스트 조회
+            teamPage = teamRepository.findAll(pageable);
+        } else { // 2. orderCriteria가 내림차 순으로 조회(조회수, 날짜 등)
+            pageable = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), Sort.Direction.DESC, orderCriteria);
+            teamPage = teamRepository.findAll(pageable);
+        }
 
         // 2. 응답 형태로 변환해 리턴한다.
         List<TeamResponse> teamResponses = teamPage.stream()
@@ -82,5 +86,12 @@ public class TeamService {
                 .collect(Collectors.toList());
 
         return new PageImpl<>(teamResponses, pageable, teamResponses.size());
+    }
+
+    @Transactional(readOnly = true)
+    public TeamResponse getTeam(Long teamId) {
+        Team team = teamRepository.findById(teamId).orElseThrow(() -> new CustomNotFoundException("채팅팀 정보를 찾을 수 없습니다."));
+        return TeamMapper.INSTANCE.teamEntityToDto(team, team.getTagNamesAsString(), team.getMember().getNickname());
+
     }
 } // end class

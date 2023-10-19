@@ -29,9 +29,24 @@ public class TeamController {
         return ResponseEntity.ok(teamService.registerTeam(customUserDetails.getMemberId(), teamRequest));
     }
 
-    @ApiOperation("채팅방 리스트 조회 api - 모든 채팅팀 리스트 조회, 페이지네이션 가능")
+    @ApiOperation(value = "채팅방 리스트 조회 api - 모든 채팅팀 리스트 조회, 페이지네이션 가능", notes = "쿼리스트링으로 orderby=views(endDate..)로 내림차순 조회 가능")
     @GetMapping
-    public ResponseEntity<Page<TeamResponse>> getTeamList(Pageable pageable) {
-        return ResponseEntity.ok(teamService.getTeamList(pageable));
+    public ResponseEntity<Page<TeamResponse>> getTeamList(
+            Pageable pageable,
+            @RequestParam(required = false, value = "orderby") String orderCriteria
+            ) {
+        return ResponseEntity.ok(teamService.getTeamList(pageable, orderCriteria));
     }
+
+    @ApiOperation("채팅방 단일 조회 api - 채팅방 상세 조회")
+    @GetMapping("/{teamId}")
+    public ResponseEntity<TeamResponse> getTeam(@PathVariable Long teamId) {
+        return ResponseEntity.ok(teamService.getTeam(teamId));
+    }
+
+
+
+
+
+
 } //  end class

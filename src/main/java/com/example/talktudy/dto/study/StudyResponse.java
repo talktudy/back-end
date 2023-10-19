@@ -7,14 +7,20 @@ import java.time.LocalDateTime;
 
 @Data
 public class StudyResponse {
+    @ApiModelProperty(name = "studyId", value = "스터디 아이디", example = "1")
+    private int studyId;
+
     @ApiModelProperty(name = "title", value = "스터디 타이틀", example = "풀스택 스터디 모집합니다.")
     private String title;
 
     @ApiModelProperty(name = "interests", value = "관심 분야, [NONE, FRONTEND, BACKEND, DESIGNER, PM, ANDROID, IOS, FULLSTACK] 8개로 고정.", example = "FRONTEND")
     private String interests;
 
-    @ApiModelProperty(name = "startDate", value = "스터디 모집 시작 날짜, 년월일", example = "2023-10-10")
-    private LocalDateTime startDate;
+    @ApiModelProperty(name = "createdDate", value = "스터디 모집 글 등록 날짜, 년월일", example = "2023-10-10")
+    private LocalDateTime createdDate;
+
+    @ApiModelProperty(name = "updatedDate", value = "스터디 모집 글 수정 날짜, 년월일", example = "2023-10-10")
+    private LocalDateTime updatedDate;
 
     @ApiModelProperty(name = "endDate", value = "스터디 모집 마감 날짜, 년월일", example = "2023-10-17T00:00")
     private LocalDateTime endDate;

@@ -7,6 +7,9 @@ import java.time.LocalDateTime;
 
 @Data
 public class TeamResponse {
+    @ApiModelProperty(name = "teamId", value = "팀 채팅방 아이디", example = "1")
+    private int teamId;
+
     @ApiModelProperty(name = "title", value = "채팅방 팀 타이틀", example = "취업 정보 공유합니다")
     private String title;
 
@@ -24,4 +27,10 @@ public class TeamResponse {
 
     @ApiModelProperty(name = "nickname", value = "작성자, 개설자의 닉네임", example = "닉네임123")
     private String nickname;
+
+    @ApiModelProperty(name = "createdDate", value = "채팅방 모집 글 등록 날짜, 년월일", example = "2023-10-10")
+    private LocalDateTime createdDate;
+
+    @ApiModelProperty(name = "updatedDate", value = "채팅방 모집 글 수정 날짜, 년월일", example = "2023-10-10")
+    private LocalDateTime updatedDate;
 } // end class

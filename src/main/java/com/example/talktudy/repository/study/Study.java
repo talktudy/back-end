@@ -35,8 +35,8 @@ public class Study {
     @Enumerated(EnumType.STRING)
     private Interests interests;
 
-    @Column(name = "is_open", nullable = false)
-    private boolean isOpen; // 모집중이면 True, 모집완료시 false
+    @Column(name = "open", nullable = false)
+    private boolean open; // 모집중이면 True, 모집완료시 false
 
     @Lob
     @Column(name = "description")
