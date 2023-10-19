@@ -73,7 +73,7 @@ public class StudyMemberService {
     @Transactional(readOnly = true)
     public List<StudyApplyDTO> getStudyApplyList(Long memberId, Long studyId) {
 
-        // 1. DB에서 회원과 스터디를 찾는다.
+        // 1. DB에서 개설자 회원과 스터디를 찾는다.
         Member member = memberRepository.findById(memberId).orElseThrow(() -> new CustomNotFoundException("회원을 찾을 수 없습니다."));
 
         Study study = studyRepository.findById(studyId).orElseThrow(() -> new CustomNotFoundException("스터디 정보를 찾을 수 없습니다."));
@@ -81,8 +81,8 @@ public class StudyMemberService {
         // 2. 해당 회원이 스터디의 개설자인지 확인한다.
         if (!member.equals(study.getMember())) throw new BadCredentialsException("접근 권한이 없습니다.");
 
-        // 3. 스터디 신청 목록을 조회한다.
-        List<StudyMember> studyMembers = studyMemberRepository.findAll();
+        // 3. 스터디별 신청 목록을 조회한다.
+        List<StudyMember> studyMembers = studyMemberRepository.findAllByStudy(study);
 
         // 4. Entity -> DTO
         List<StudyApplyDTO> studyApplyResponse = studyMembers.stream()
@@ -117,6 +117,8 @@ public class StudyMemberService {
 
         List<StudyMember> studyMembers = studyMemberRepository.findAllByStudy(study);
 
+        // 4-1.
+
         for(StudyMember studyMember : studyMembers) {
             if (studyMember.getMember().equals(applyMember)) {
                 // 5. Status에 맞춰 스터디의 현재 인원수를 변경한다.
@@ -124,8 +126,14 @@ public class StudyMemberService {
 
                 switch (status) {
                     case ACCEPTED: // 기존에도 수락됨이었다면, 인원수 변경 X
-                        if (studyMember.getApplyStatus() != ApplyStatus.ACCEPTED)
-                            study.setCurrentCapacity(study.getCurrentCapacity() + 1);
+                        if (studyMember.getApplyStatus() != ApplyStatus.ACCEPTED) {
+                            // 스터디의 현재 인원수와 총 인원수를 비교해서 같으면 모집 인원 증가가 불가하다.
+                            if (study.getCurrentCapacity() == study.getMaxCapacity()) {
+                                throw new IllegalArgumentException("현재 인원이 모두 차 더이상 등록이 불가능합니다.");
+                            } else {
+                                study.setCurrentCapacity(study.getCurrentCapacity() + 1);
+                            }
+                        }
                         break;
                     case REJECTED: // 거절이면, 인원수 변경 X
                         break;

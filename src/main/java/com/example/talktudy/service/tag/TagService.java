@@ -26,12 +26,18 @@ public class TagService {
     private final TeamTagRepository teamTagRepository;
 
     @Transactional
-    public void createStudyTags(String[] tags, Study study) {
+    public void createStudyTags(String[] tags, Study study, boolean isUpdate) {
+        // 1. 수정이면 스터디 태그를 모두 한번에 삭제시키기
+        if (isUpdate) studyTagRepository.deleteAllByStudy(study);
+
+        // 2. 태그와 스터디 태그 등록
         List<StudyTag> studyTags = Arrays.stream(tags).map(
                 tagName -> {
-                    Tag newTag = tagRepository.findByName(tagName).orElseGet(
+                    String lowerTagName = tagName.toLowerCase();
+
+                    Tag newTag = tagRepository.findByName(lowerTagName).orElseGet(
                             () -> tagRepository.save(
-                                    Tag.builder().name(tagName).build()
+                                    Tag.builder().name(lowerTagName).build()
                             )
                     );
 
@@ -44,11 +50,14 @@ public class TagService {
 
     @Transactional
     public void createTeamTags(String[] tags, Team team) {
+        // 새로운 태그를 Insert,
         List<TeamTag> teamTags = Arrays.stream(tags).map(
                 tagName -> {
-                    Tag newTag = tagRepository.findByName(tagName).orElseGet(
+                    String lowerTagName = tagName.toLowerCase();
+
+                    Tag newTag = tagRepository.findByName(lowerTagName).orElseGet(
                             () -> tagRepository.save(
-                                    Tag.builder().name(tagName).build()
+                                    Tag.builder().name(lowerTagName).build()
                             )
                     );
 
@@ -58,5 +67,4 @@ public class TagService {
 
         teamTagRepository.saveAll(teamTags);
     }
-
 } //  enc class
