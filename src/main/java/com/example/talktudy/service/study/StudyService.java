@@ -15,6 +15,9 @@ import com.example.talktudy.service.chat.ChatService;
 import com.example.talktudy.service.tag.TagService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -77,5 +80,18 @@ public class StudyService {
 
         // 6. Entity -> DTO 매핑한다.
         return StudyMapper.INSTANCE.studyEntityToDto(newStudy, studyRequest.getTag(), member.getNickname());
+    }
+
+    @Transactional(readOnly = true)
+    public Page<StudyResponse> getStudyList(Pageable pageable) {
+        // 1. DB에서 스터디 리스트를 찾는다
+        Page<Study> studyPage = studyRepository.findAll(pageable);
+
+        // 2. 응답 형태로 변환해 리턴한다.
+        List<StudyResponse> studyResponses = studyPage.stream()
+                .map(study -> StudyMapper.INSTANCE.studyEntityToDto(study, study.getTagNamesAsString(), study.getMember().getNickname()))
+                .collect(Collectors.toList());
+
+        return new PageImpl<>(studyResponses, pageable, studyResponses.size());
     }
 } // end class

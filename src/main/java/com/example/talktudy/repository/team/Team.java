@@ -2,12 +2,14 @@ package com.example.talktudy.repository.team;
 
 import com.example.talktudy.repository.common.Interests;
 import com.example.talktudy.repository.member.Member;
+import com.example.talktudy.repository.study.StudyTag;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.HashSet;
 import java.util.Set;
 
 @Getter
@@ -50,4 +52,19 @@ public class Team {
 
     @OneToMany(mappedBy = "team", cascade = CascadeType.REMOVE)
     private Set<TeamMember> teamMembers;
+
+    @OneToMany(mappedBy = "team", cascade = CascadeType.REMOVE)
+    private Set<TeamTag> teamTags;
+
+    public String getTagNamesAsString() {
+        Set<String> tagNames = new HashSet<>();
+
+        if (teamTags != null) {
+            for(TeamTag teamTag : teamTags) {
+                tagNames.add(teamTag.getTag().getName());
+            }
+        }
+
+        return String.join(",", tagNames);
+    }
 } // end class

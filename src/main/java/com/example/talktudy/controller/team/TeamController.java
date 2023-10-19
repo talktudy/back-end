@@ -9,12 +9,11 @@ import com.example.talktudy.service.team.TeamService;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.ApiIgnore;
 
 @Slf4j
@@ -28,5 +27,11 @@ public class TeamController {
     @PostMapping(value = "/register")
     public ResponseEntity<TeamResponse> registerTeam(@ApiIgnore @AuthenticationPrincipal CustomUserDetails customUserDetails, @RequestBody TeamRequest teamRequest) {
         return ResponseEntity.ok(teamService.registerTeam(customUserDetails.getMemberId(), teamRequest));
+    }
+
+    @ApiOperation("채팅방 리스트 조회 api - 모든 채팅팀 리스트 조회, 페이지네이션 가능")
+    @GetMapping
+    public ResponseEntity<Page<TeamResponse>> getTeamList(Pageable pageable) {
+        return ResponseEntity.ok(teamService.getTeamList(pageable));
     }
 } //  end class

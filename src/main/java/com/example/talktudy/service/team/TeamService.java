@@ -1,5 +1,6 @@
 package com.example.talktudy.service.team;
 
+import com.example.talktudy.dto.study.StudyResponse;
 import com.example.talktudy.dto.team.TeamRequest;
 import com.example.talktudy.dto.team.TeamResponse;
 import com.example.talktudy.exception.CustomNotFoundException;
@@ -8,6 +9,7 @@ import com.example.talktudy.repository.chat.ChatRoomRepository;
 import com.example.talktudy.repository.common.Interests;
 import com.example.talktudy.repository.member.Member;
 import com.example.talktudy.repository.member.MemberRepository;
+import com.example.talktudy.repository.study.Study;
 import com.example.talktudy.repository.tag.TagRepository;
 import com.example.talktudy.repository.team.Team;
 import com.example.talktudy.repository.team.TeamRepository;
@@ -17,8 +19,14 @@ import com.example.talktudy.service.tag.TagService;
 import com.example.talktudy.service.tag.TeamMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -61,5 +69,18 @@ public class TeamService {
 
         // 6. Entity -> DTO 매핑한다.
         return TeamMapper.INSTANCE.teamEntityToDto(newTeam, teamRequest.getTag(), member.getNickname());
+    }
+
+    @Transactional(readOnly = true)
+    public Page<TeamResponse> getTeamList(Pageable pageable) {
+        // 1. DB에서 팀 리스트를 찾는다
+        Page<Team> teamPage = teamRepository.findAll(pageable);
+
+        // 2. 응답 형태로 변환해 리턴한다.
+        List<TeamResponse> teamResponses = teamPage.stream()
+                .map(team -> TeamMapper.INSTANCE.teamEntityToDto(team, team.getTagNamesAsString(), team.getMember().getNickname()))
+                .collect(Collectors.toList());
+
+        return new PageImpl<>(teamResponses, pageable, teamResponses.size());
     }
 } // end class

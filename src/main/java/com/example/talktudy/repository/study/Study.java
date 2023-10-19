@@ -8,6 +8,7 @@ import org.hibernate.annotations.UpdateTimestamp;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -64,4 +65,20 @@ public class Study {
 
     @OneToMany(mappedBy = "study", cascade = CascadeType.REMOVE)
     private Set<StudyMember> studyMembers;
+
+    @OneToMany(mappedBy = "study", cascade = CascadeType.REMOVE)
+    private Set<StudyTag> studyTags;
+
+    public String getTagNamesAsString() {
+        Set<String> tagNames = new HashSet<>();
+
+        if (studyTags != null) {
+            for(StudyTag studyTag : studyTags) {
+                tagNames.add(studyTag.getTag().getName());
+            }
+        }
+
+        return String.join(",", tagNames);
+    }
+
 } // end class

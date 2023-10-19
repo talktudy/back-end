@@ -24,4 +24,7 @@ public class StudyTag { // study, tag 매핑 테이블
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "tag_id")
     private Tag tag;
+
+
+
 } // end class

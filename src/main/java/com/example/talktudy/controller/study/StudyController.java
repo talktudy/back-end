@@ -7,13 +7,14 @@ import com.example.talktudy.service.study.StudyService;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.ApiIgnore;
+
+import java.util.List;
 
 @Slf4j
 @RequestMapping("/api/study")
@@ -26,6 +27,12 @@ public class StudyController {
     @PostMapping(value = "/register")
     public ResponseEntity<StudyResponse> registerStudy(@ApiIgnore @AuthenticationPrincipal CustomUserDetails customUserDetails, @RequestBody StudyRequest studyRequest) {
         return ResponseEntity.ok(studyService.registerStudy(customUserDetails.getMemberId(), studyRequest));
+    }
+
+    @ApiOperation("스터디 리스트 조회 api - 모든 스터디 리스트 조회, 페이지네이션 가능")
+    @GetMapping
+    public ResponseEntity<Page<StudyResponse>> getStudyList(Pageable pageable) {
+        return ResponseEntity.ok(studyService.getStudyList(pageable));
     }
 
 
