@@ -23,6 +23,7 @@ import java.util.UUID;
 public class S3Uploader {
     public static final String S3_DIR_MEMBER = "member";
     public static final String S3_DIR_PORTFOLIO = "portfolio";
+    public static final String S3_DIR_CONTENT = "content";
 
     @Value("${cloud.aws.s3.bucket}")
     private String bucketName;
