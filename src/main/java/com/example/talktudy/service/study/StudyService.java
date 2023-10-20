@@ -14,6 +14,9 @@ import com.example.talktudy.repository.tag.Tag;
 import com.example.talktudy.repository.tag.TagRepository;
 import com.example.talktudy.service.chat.ChatService;
 import com.example.talktudy.service.tag.TagService;
+import com.querydsl.core.types.CollectionExpression;
+import com.querydsl.jpa.impl.JPAQuery;
+import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.*;
@@ -24,6 +27,7 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.EntityManager;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -142,19 +146,9 @@ public class StudyService {
 
     @Transactional(readOnly = true)
     public Page<StudyResponse> getStudyList(Pageable pageable, String orderCriteria, String isOpen, List<String> interests, String keyword, String type) {
-        // TODO : QueryDSL 으로 다중 필터 검색 구현하기
 
-
-
-        Page<Study> studyPage = null;
-
-        if (orderCriteria == null) { // 1. 전체 리스트 조회
-            studyPage = studyRepository.findAll(pageable);
-        }
-        else { // 2. orderCriteria가 내림차 순으로 조회(조회수, 총인원수 등)
-            pageable = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), Sort.Direction.DESC, orderCriteria);
-            studyPage = studyRepository.findAll(pageable);
-        }
+        // 1. QueryDSL로 동적 조회 쿼리
+        Page<Study> studyPage = studyRepository.findAll(pageable, orderCriteria, isOpen, interests, keyword, type);
 
         // 2. 응답 형태로 변환해 리턴한다.
         List<StudyResponse> studyResponses = studyPage.stream()

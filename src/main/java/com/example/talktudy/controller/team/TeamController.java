@@ -39,12 +39,12 @@ public class TeamController {
     @GetMapping
     public ResponseEntity<Page<TeamResponse>> getTeamList(
             Pageable pageable,
-            @RequestParam(required = false, value = "orderby") String orderCriteria
+            @RequestParam(required = false, value = "orderBy") String orderCriteria
             ) {
         return ResponseEntity.ok(teamService.getTeamList(pageable, orderCriteria));
     }
 
-    @ApiOperation("채팅방 단일 조회 api - 채팅방 상세 조회")
+    @ApiOperation("채팅방 단일 조회 api - 채팅방 상세 조회, 조회수 증가")
     @GetMapping("/{teamId}")
     public ResponseEntity<TeamResponse> getTeam(@PathVariable Long teamId) {
         return ResponseEntity.ok(teamService.getTeam(teamId));
