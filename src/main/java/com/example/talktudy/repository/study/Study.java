@@ -81,4 +81,7 @@ public class Study {
         return String.join(",", tagNames);
     }
 
+    // 생성한 엔티티에 대한 QueryDSL 모델 생성
+    // public static QStudy study = QStudy.study;
+
 } // end class
