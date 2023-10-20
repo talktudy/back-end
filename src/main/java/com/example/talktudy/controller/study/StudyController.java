@@ -40,9 +40,13 @@ public class StudyController {
     @GetMapping
     public ResponseEntity<Page<StudyResponse>> getStudyList(
             Pageable pageable,
-            @RequestParam(required = false, value = "orderby") String orderCriteria
+            @RequestParam(required = false, value = "orderby") String orderCriteria, // 조회수
+            @RequestParam(required = false, value = "open") String isOpen, // 모집중의 여부
+            @RequestParam(required = false, value = "interests") List<String> interests, // 다중으로 선택하는 모집분야별
+            @RequestParam(required = false, value = "keyword") String keyword, // 검색 키워드
+            @RequestParam(required = false, value = "type") String type // 태그 Or 제목
     ) {
-        return ResponseEntity.ok(studyService.getStudyList(pageable, orderCriteria));
+        return ResponseEntity.ok(studyService.getStudyList(pageable, orderCriteria, isOpen, interests, keyword, type));
     }
 
     @ApiOperation("스터디 리스트 모집중 별 조회 api - 모든 스터디 리스트 모집중 상태만 조회, 페이지네이션 가능. 페이지네이션 : size=4, page=1..")

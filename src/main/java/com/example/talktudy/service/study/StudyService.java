@@ -17,6 +17,7 @@ import com.example.talktudy.service.tag.TagService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.*;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -28,6 +29,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -57,9 +59,14 @@ public class StudyService {
                 .endDate(studyRequest.getEndDate()) // 마감 예정일
                 .build();
 
-        // 3. Tag 테이블에서 기존 값이 있는지 검사한다. 값이 있으면 tag에는 저장하고 없으면 저장한다.
-        // 그렇게 만들어진 Tag 값을 StudyTag에 저장한다.
-        tagService.createStudyTags(studyRequest.getTag().split(","), study, false);
+        // 3. 태그 정보를 업데이트 한다.
+        Set<StudyTag> studyTags = tagService.createStudyTags(studyRequest.getTag().split(","), study, false);
+
+        String studyTagStr = studyTags.stream()
+                .map(studyTag -> studyTag.getTag().getName()) // 또는 다른 필드를 선택
+                .collect(Collectors.joining(","));
+
+        study.setStudyTags(studyTags);
 
         // 4. 지원, 팀 채팅방을 개설한다.
         // 지원
@@ -83,7 +90,7 @@ public class StudyService {
         Study newStudy = studyRepository.save(study);
 
         // 6. Entity -> DTO 매핑한다.
-        return StudyMapper.INSTANCE.studyEntityToDto(newStudy, studyRequest.getTag(), member.getNickname());
+        return StudyMapper.INSTANCE.studyEntityToDto(newStudy, studyTagStr, member.getNickname());
     }
 
     @Transactional
@@ -115,21 +122,30 @@ public class StudyService {
         study.setEndDate(studyRequest.getEndDate());
         study.setDescription(studyRequest.getDescription() != null ? studyRequest.getDescription() : study.getDescription());
 
-        // 6. Tag 테이블에서 기존 값이 있는지 검사한다. 값이 있으면 tag에는 저장하고 없으면 저장한다.
-        // 그렇게 만들어진 Tag 값을 StudyTag에 저장한다.
-        tagService.createStudyTags(studyRequest.getTag().split(","), study, true);
+        // 6. 태그 정보를 업데이트 한다.
+        Set<StudyTag> studyTags = tagService.createStudyTags(studyRequest.getTag().split(","), study, true);
 
-        // 7. TODO : 팀 채팅방의 정보도 변경?
+        String studyTagStr = studyTags.stream()
+                .map(studyTag -> studyTag.getTag().getName()) // 또는 다른 필드를 선택
+                .collect(Collectors.joining(","));
+
+        study.setStudyTags(studyTags);
+
+        // 7. TODO : 스터디 채팅방의 정보도 변경?
 
         // 8. Study 객체를 DB에 등록한다.
         Study newStudy = studyRepository.save(study);
 
         // 6. Entity -> DTO 매핑한다.
-        return StudyMapper.INSTANCE.studyEntityToDto(newStudy, studyRequest.getTag(), member.getNickname());
+        return StudyMapper.INSTANCE.studyEntityToDto(newStudy, studyTagStr, newStudy.getMember().getNickname());
     }
 
     @Transactional(readOnly = true)
-    public Page<StudyResponse> getStudyList(Pageable pageable, String orderCriteria) {
+    public Page<StudyResponse> getStudyList(Pageable pageable, String orderCriteria, String isOpen, List<String> interests, String keyword, String type) {
+        // TODO : QueryDSL 으로 다중 필터 검색 구현하기
+
+
+
         Page<Study> studyPage = null;
 
         if (orderCriteria == null) { // 1. 전체 리스트 조회
