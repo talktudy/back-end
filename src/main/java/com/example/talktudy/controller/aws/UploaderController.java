@@ -6,6 +6,7 @@ import com.example.talktudy.dto.study.StudyRequest;
 import com.example.talktudy.dto.study.StudyResponse;
 import com.example.talktudy.security.CustomUserDetails;
 import com.example.talktudy.service.uploader.UploaderService;
+import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -19,6 +20,7 @@ import springfox.documentation.annotations.ApiIgnore;
 @RequestMapping("/api/upload")
 @RestController
 @RequiredArgsConstructor
+@Api(tags = {"Uploader API - 파일 업로드 관련 API"})
 public class UploaderController {
     private final UploaderService uploaderService;
 
