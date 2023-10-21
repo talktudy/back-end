@@ -1,6 +1,6 @@
 package com.example.talktudy.config.websocket;
 
-import com.example.talktudy.filter.StompHandler;
+import com.example.talktudy.filter.ChatPreHandler;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.messaging.simp.config.ChannelRegistration;
@@ -13,12 +13,16 @@ import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerCo
 @EnableWebSocketMessageBroker
 @RequiredArgsConstructor
 public class ChatConfig implements WebSocketMessageBrokerConfigurer {
-     private final StompHandler stompHandler;
+     private final ChatPreHandler chatPreHandler;
+     private final ChatErrorHandler chatErrorHandler;
 
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
         // 소켓 연결과 관련된 설정. ws://localhost:8080/ws/chat로 도착할때
-        registry.addEndpoint("/ws/chat").setAllowedOriginPatterns("*").withSockJS();
+        registry.addEndpoint("/api/chat").setAllowedOriginPatterns("*").withSockJS();
+
+        // 소켓 에러 핸들러 구현
+        registry.setErrorHandler(chatErrorHandler);
     }
 
     @Override
@@ -32,6 +36,6 @@ public class ChatConfig implements WebSocketMessageBrokerConfigurer {
 
     @Override
     public void configureClientInboundChannel(ChannelRegistration registration) {
-        registration.interceptors(stompHandler);
+        registration.interceptors(chatPreHandler);
     }
 } // enc class
