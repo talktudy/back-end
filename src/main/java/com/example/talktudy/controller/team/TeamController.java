@@ -1,5 +1,6 @@
 package com.example.talktudy.controller.team;
 
+import com.example.talktudy.dto.chat.ChatRoomDTO;
 import com.example.talktudy.dto.study.StudyRequest;
 import com.example.talktudy.dto.study.StudyResponse;
 import com.example.talktudy.dto.team.TeamRequest;
@@ -65,10 +66,5 @@ public class TeamController {
     public ResponseEntity<TeamResponse> getTeam(@PathVariable Long teamId) {
         return ResponseEntity.ok(teamService.getTeam(teamId));
     }
-
-
-
-
-
 
 } //  end class

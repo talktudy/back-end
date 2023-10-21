@@ -78,6 +78,7 @@ public class StudyService {
                 .name(study.getTitle())
                 .isStudyApply(true)
                 .study(study)
+                .maxCapacity(10)
                 .build();
 
         // 팀 채팅방
@@ -85,6 +86,7 @@ public class StudyService {
                 .name(study.getTitle())
                 .isStudyApply(false)
                 .study(study)
+                .maxCapacity(study.getMaxCapacity())
                 .build();
 
         chatRoomRepository.save(applyChatRoom);

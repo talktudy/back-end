@@ -47,6 +47,7 @@ public class SecurityConfig {
                 .authorizeRequests()// 조건별로 요청 허용/제한 설정
                 .antMatchers("/api/auth/**", "/resources/static/**").permitAll() // 로그인, 회원가입 API는 permitAll()
                 //.antMatchers("/post/create").hasRole("USER") // 유저만 가능한 엔드포인트 설
+                // .antMatchers("/api/chat").authenticated()
                 .and()
                 .exceptionHandling()
                 .authenticationEntryPoint(customAuthenticationEntryPoint)
@@ -69,7 +70,7 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource(){
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(List.of("http://localhost:3000"));
+        configuration.setAllowedOrigins(List.of("http://localhost:3000", "http://127.0.0.1:5500"));
         configuration.setAllowCredentials(true); // token 주고 받을 때,
         configuration.addExposedHeader("Authorization"); // token
         configuration.addAllowedHeader("*");

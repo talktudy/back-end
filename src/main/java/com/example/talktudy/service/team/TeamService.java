@@ -1,5 +1,6 @@
 package com.example.talktudy.service.team;
 
+import com.example.talktudy.dto.chat.ChatRoomDTO;
 import com.example.talktudy.dto.study.StudyResponse;
 import com.example.talktudy.dto.team.TeamRequest;
 import com.example.talktudy.dto.team.TeamResponse;
@@ -11,10 +12,7 @@ import com.example.talktudy.repository.member.Member;
 import com.example.talktudy.repository.member.MemberRepository;
 import com.example.talktudy.repository.study.Study;
 import com.example.talktudy.repository.tag.TagRepository;
-import com.example.talktudy.repository.team.Team;
-import com.example.talktudy.repository.team.TeamRepository;
-import com.example.talktudy.repository.team.TeamTag;
-import com.example.talktudy.repository.team.TeamTagRepository;
+import com.example.talktudy.repository.team.*;
 import com.example.talktudy.service.study.StudyMapper;
 import com.example.talktudy.service.tag.TagService;
 import com.example.talktudy.service.tag.TeamMapper;
@@ -37,6 +35,7 @@ public class TeamService {
     private final MemberRepository memberRepository;
     private final TagService tagService;
     private final ChatRoomRepository chatRoomRepository;
+    private final TeamMemberRepository teamMemberRepository;
 
     @Transactional
     public TeamResponse registerTeam(Long memberId, TeamRequest teamRequest) {
@@ -67,6 +66,7 @@ public class TeamService {
                 .name(team.getTitle())
                 .isStudyApply(false)
                 .team(team)
+                .maxCapacity(10)
                 .build();
 
         chatRoomRepository.save(chatRoom);
@@ -135,6 +135,5 @@ public class TeamService {
 
         return TeamMapper.INSTANCE.teamEntityToDto(newTeam, newTeam.getTagNamesAsString(), newTeam.getMember().getNickname());
     }
-
 
 } // end class
