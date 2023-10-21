@@ -23,7 +23,11 @@ public class ChatMessageController {
             chatMessage.setMessage(chatMessage.getNickname() + "님이 입장하였습니다.");
         }
 
+        // TODO : DB에 저장 로직
+
         // log.info(chatMessage.getNickname() + " : " + chatMessage.getMessage());
         sendingOperations.convertAndSend("/topic/api/chat/room/" + chatMessage.getChatRoomId(), chatMessage);
     }
+
+    // TODO : 채팅방 리스트 조회, 채팅방 단일 조회, 채팅방 제목 수정,
 } // End class
