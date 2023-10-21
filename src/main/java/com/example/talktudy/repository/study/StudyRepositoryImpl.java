@@ -85,7 +85,7 @@ public class StudyRepositoryImpl implements CustomStudyRepository {
         return null;
     }
 
-
+    // 정렬
     private OrderSpecifier<?> sortStudies(String orderCriteria) {
         if ("views".equalsIgnoreCase(orderCriteria)) {
             return study.views.desc();

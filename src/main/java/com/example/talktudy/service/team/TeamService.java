@@ -112,15 +112,10 @@ public class TeamService {
     }
 
     @Transactional(readOnly = true)
-    public Page<TeamResponse> getTeamList(Pageable pageable, String orderCriteria) {
-        Page<Team> teamPage = null;
+    public Page<TeamResponse> getTeamList(Pageable pageable, String orderCriteria, List<String> interests, String keyword, String type) {
 
-        if (orderCriteria == null) { // 1. 전체 리스트 조회
-            teamPage = teamRepository.findAll(pageable);
-        } else { // 2. orderCriteria가 내림차 순으로 조회(조회수, 날짜 등)
-            pageable = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), Sort.Direction.DESC, orderCriteria);
-            teamPage = teamRepository.findAll(pageable);
-        }
+        // 1. QueryDSL로 동적 조회 쿼리
+        Page<Team> teamPage = teamRepository.findAll(pageable, orderCriteria, interests, keyword, type);
 
         // 2. 응답 형태로 변환해 리턴한다.
         List<TeamResponse> teamResponses = teamPage.stream()

@@ -5,11 +5,9 @@ import com.example.talktudy.dto.study.StudyRequest;
 import com.example.talktudy.dto.study.StudyResponse;
 import com.example.talktudy.security.CustomUserDetails;
 import com.example.talktudy.service.study.StudyService;
-import io.swagger.annotations.ApiImplicitParam;
-import io.swagger.annotations.ApiImplicitParams;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
+import io.swagger.annotations.*;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -25,6 +23,7 @@ import java.util.List;
 @RequestMapping("/api/study")
 @RestController
 @RequiredArgsConstructor
+@Api(tags = {"Study API - 스터디 관련 Api"})
 public class StudyController {
     private final StudyService studyService;
 

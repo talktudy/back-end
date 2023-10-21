@@ -5,6 +5,7 @@ import com.example.talktudy.dto.auth.PasswordRequest;
 import com.example.talktudy.dto.common.ResponseDTO;
 import com.example.talktudy.security.CustomUserDetails;
 import com.example.talktudy.service.member.MemberService;
+import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import lombok.RequiredArgsConstructor;
@@ -19,7 +20,7 @@ import springfox.documentation.annotations.ApiIgnore;
 @RequestMapping("/api/member")
 @RestController
 @RequiredArgsConstructor
-@ApiOperation("회원 Member Rest API 컨트롤러")
+@Api(tags = {"Member API - 회원 관련 Api"})
 public class MemberController {
     private final MemberService memberService;
 

@@ -158,19 +158,19 @@ public class StudyService {
         return new PageImpl<>(studyResponses, pageable, studyResponses.size());
     }
 
-    @Transactional(readOnly = true)
-    public Page<StudyResponse> getStudyListByOpen(Pageable pageable) {
-
-        // 1. isOpen이 true인 모집중인 데이터만 조회
-        Page<Study> studyPage = studyRepository.findAllByOpenTrue(pageable);
-
-        // 2. 응답 형태로 변환해 리턴한다.
-        List<StudyResponse> studyResponses = studyPage.stream()
-                .map(study -> StudyMapper.INSTANCE.studyEntityToDto(study, study.getTagNamesAsString(), study.getMember().getNickname()))
-                .collect(Collectors.toList());
-
-        return new PageImpl<>(studyResponses, pageable, studyResponses.size());
-    }
+//    @Transactional(readOnly = true)
+//    public Page<StudyResponse> getStudyListByOpen(Pageable pageable) {
+//
+//        // 1. isOpen이 true인 모집중인 데이터만 조회
+//        Page<Study> studyPage = studyRepository.findAllByOpenTrue(pageable);
+//
+//        // 2. 응답 형태로 변환해 리턴한다.
+//        List<StudyResponse> studyResponses = studyPage.stream()
+//                .map(study -> StudyMapper.INSTANCE.studyEntityToDto(study, study.getTagNamesAsString(), study.getMember().getNickname()))
+//                .collect(Collectors.toList());
+//
+//        return new PageImpl<>(studyResponses, pageable, studyResponses.size());
+//    }
 
     @Transactional
     public StudyResponse getStudy(Long studyId) {
