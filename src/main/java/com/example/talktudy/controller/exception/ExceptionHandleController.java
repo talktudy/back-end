@@ -1,5 +1,6 @@
 package com.example.talktudy.controller.exception;
 
+import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -13,7 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/exception")
 @RestController
 @RequiredArgsConstructor
-@ApiOperation("Exception 예외 처리 컨트롤리")
+@Api(tags = {"Exception API - 인증 예외 처리 관련된 API"})
 public class ExceptionHandleController {
 
     @GetMapping("/access-denied")

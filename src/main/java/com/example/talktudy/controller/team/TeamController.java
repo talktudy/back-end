@@ -6,6 +6,7 @@ import com.example.talktudy.dto.team.TeamRequest;
 import com.example.talktudy.dto.team.TeamResponse;
 import com.example.talktudy.security.CustomUserDetails;
 import com.example.talktudy.service.team.TeamService;
+import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import lombok.RequiredArgsConstructor;
@@ -23,6 +24,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/team")
 @RequiredArgsConstructor
+@Api(tags = {"Team API - 채팅방, 팀 채팅 관련 Api"})
 public class TeamController {
     private final TeamService teamService;
 

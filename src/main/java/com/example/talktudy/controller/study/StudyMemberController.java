@@ -7,10 +7,7 @@ import com.example.talktudy.dto.study.StudyResponse;
 import com.example.talktudy.security.CustomUserDetails;
 import com.example.talktudy.service.study.StudyMemberService;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import io.swagger.annotations.ApiModelProperty;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
-import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -27,6 +24,7 @@ import java.util.List;
 @RequestMapping("/api/study/apply")
 @RestController
 @RequiredArgsConstructor
+@Api(tags = {"StudyMember API - 스터디 신청, 지원과 관련된 Api"})
 public class StudyMemberController {
     private final StudyMemberService studyMemberService;
 

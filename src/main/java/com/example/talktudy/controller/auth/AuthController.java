@@ -22,6 +22,7 @@ import javax.validation.Valid;
 @RequestMapping("/api/auth")
 @RestController
 @RequiredArgsConstructor
+@Api(tags = {"Auth API - 회원 등록, 로그인, 로그아웃 등 인증과 관련된 API"})
 // @Tag(name = "auth-controller", description = "회원 등록, 로그인, 로그아웃 등 인증 인가와 관련된 Rest API 컨트롤러")
 public class AuthController {
     private final AuthService authService;
