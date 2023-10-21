@@ -5,6 +5,7 @@ import lombok.*;
 
 import javax.persistence.*;
 import com.example.talktudy.repository.team.*;
+import org.mapstruct.Named;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -38,4 +39,14 @@ public class ChatRoom {
     @OneToMany(mappedBy = "chatRoom", cascade = CascadeType.REMOVE)
     private List<ChatMessage> messages = new ArrayList<>();
 
+    @Column(name = "current_Capacity", columnDefinition = "INTEGER default 0") // 현재 채팅방 인원수
+    private int currentCapacity;
+
+    @Column(name = "max_Capacity") // 최대 채팅방 인원수
+    private int maxCapacity;
+
+    public boolean isCapacityFull() {
+        if (currentCapacity >= maxCapacity) return true;
+        else return false;
+    }
 } // end class
