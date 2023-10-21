@@ -33,34 +33,34 @@ public class ChatPreHandler implements ChannelInterceptor {
     public Message<?> preSend(Message<?> message, MessageChannel channel) {
         log.info("STOMP Handler 실행");
 
-        StompHeaderAccessor headerAccessor = StompHeaderAccessor.wrap(message);
-
-        if (StompCommand.SUBSCRIBE == headerAccessor.getCommand()) {
-            String destination = headerAccessor.getDestination();
-            Long chatRoomId = parseChatRoomId(destination);
-
-            ChatRoom chatRoom = chatService.getRoomById(chatRoomId);
-
-            if (chatRoomId != null) {
-                chatRoom.setCurrentCapacity(chatRoom.getCurrentCapacity() + 1);
-                chatService.saveChatRoom(chatRoom);
-
-                log.info("ChatRoomId [" + chatRoomId + "] 의 현재 인원 1 입장");
-            }
-        }
-        else if (StompCommand.DISCONNECT == headerAccessor.getCommand()) {
-            String destination = headerAccessor.getDestination();
-            Long chatRoomId = parseChatRoomId(destination);
-
-            ChatRoom chatRoom = chatService.getRoomById(chatRoomId);
-
-            if (chatRoomId != null) {
-                chatRoom.setCurrentCapacity(chatRoom.getCurrentCapacity() - 1);
-                chatService.saveChatRoom(chatRoom);
-
-                log.info("ChatRoomId [" + chatRoomId + "] 의 현재 인원 1 퇴장");
-            }
-        }
+//        StompHeaderAccessor headerAccessor = StompHeaderAccessor.wrap(message);
+//
+//        if (StompCommand.SUBSCRIBE == headerAccessor.getCommand()) {
+//            String destination = headerAccessor.getDestination();
+//            Long chatRoomId = parseChatRoomId(destination);
+//
+//            ChatRoom chatRoom = chatService.getRoomById(chatRoomId);
+//
+//            if (chatRoomId != null) {
+//                chatRoom.setCurrentCapacity(chatRoom.getCurrentCapacity() + 1);
+//                chatService.saveChatRoom(chatRoom);
+//
+//                log.info("ChatRoomId [" + chatRoomId + "] 의 현재 인원 1 입장");
+//            }
+//        }
+//        else if (StompCommand.DISCONNECT == headerAccessor.getCommand()) {
+//            String destination = headerAccessor.getDestination();
+//            Long chatRoomId = parseChatRoomId(destination);
+//
+//            ChatRoom chatRoom = chatService.getRoomById(chatRoomId);
+//
+//            if (chatRoomId != null) {
+//                chatRoom.setCurrentCapacity(chatRoom.getCurrentCapacity() - 1);
+//                chatService.saveChatRoom(chatRoom);
+//
+//                log.info("ChatRoomId [" + chatRoomId + "] 의 현재 인원 1 퇴장");
+//            }
+//        }
 
         return message;
 //
