@@ -1,6 +1,7 @@
 package com.example.talktudy.service.chat;
 
 import com.example.talktudy.dto.chat.ChatRoomDTO;
+import com.example.talktudy.dto.common.ResponseDTO;
 import com.example.talktudy.exception.CustomNotAcceptException;
 import com.example.talktudy.exception.CustomNotFoundException;
 import com.example.talktudy.repository.chat.ChatRoom;
@@ -18,6 +19,7 @@ import com.example.talktudy.repository.team.TeamRepository;
 import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -180,5 +182,32 @@ public class ChatService {
         ChatRoom chatRoom = chatRoomRepository.findByStudyAndIsStudyApplyTrue(study).orElseThrow(() -> new CustomNotFoundException("스터디 지원 채팅방 정보를 찾을 수 없습니다."));
 
         return ChatRoomMapper.INSTANCE.chatRoomEntityToDto(chatRoom);
+    }
+
+    @Transactional
+    public ResponseDTO changeChatRoomTitle(Long memberId, Long chatRoomId, String title) {
+
+        // 1. DB에서 회원을 찾는다.
+        Member member = memberRepository.findById(memberId).orElseThrow(() -> new CustomNotFoundException("회원을 찾을 수 없습니다."));
+
+        // 2. 채팅룸을 찾는다.
+        ChatRoom chatRoom = chatRoomRepository.findById(chatRoomId).orElseThrow(() -> new CustomNotFoundException("채팅방 정보가 없습니다."));
+
+        // 3. 채팅룸(스터디, 팀)의 개설자가 회원이 맞는지 검사하고 타이틀을 변경한다.
+        if (chatRoom.getStudy() != null) {
+            if (member.equals(chatRoom.getStudy().getMember())) {
+                chatRoom.setName(title);
+            }
+        }
+        else {
+            if (member.equals(chatRoom.getTeam().getMember())) {
+                chatRoom.setName(title);
+            }
+        }
+
+        // 4. 업데이트
+        chatRoomRepository.save(chatRoom);
+
+        return ResponseDTO.of(200, HttpStatus.OK, chatRoom.getName());
     }
 } // end class
