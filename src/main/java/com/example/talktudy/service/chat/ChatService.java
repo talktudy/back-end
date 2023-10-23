@@ -1,6 +1,7 @@
 package com.example.talktudy.service.chat;
 
 import com.example.talktudy.dto.chat.ChatRoomDTO;
+import com.example.talktudy.dto.common.ResponseDTO;
 import com.example.talktudy.exception.CustomNotAcceptException;
 import com.example.talktudy.exception.CustomNotFoundException;
 import com.example.talktudy.repository.chat.ChatRoom;
@@ -18,8 +19,14 @@ import com.example.talktudy.repository.team.TeamRepository;
 import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -29,6 +36,7 @@ public class ChatService {
     private final MemberRepository memberRepository;
     private final TeamRepository teamRepository;
     private final StudyRepository studyRepository;
+    private final StudyMemberRepository studyMemberRepository;
 
 //    @Transactional
 //    public ChatRoomDTO enterChatRoom(Long memberId, Long teamId, Long studyId, String isStudyApply) {
@@ -115,13 +123,91 @@ public class ChatService {
 //        return null;
 //    }
 
+//    @Transactional(readOnly = true)
+//    public ChatRoom getRoomById(Long chatRoomId) {
+//        return chatRoomRepository.findById(chatRoomId).orElseThrow(() -> new CustomNotFoundException("채팅방 정보가 없습니다."));
+//    }
+//
+//    @Transactional
+//    public void saveChatRoom(ChatRoom chatRoom) {
+//        chatRoomRepository.save(chatRoom);
+//    }
+
     @Transactional(readOnly = true)
-    public ChatRoom getRoomById(Long chatRoomId) {
-        return chatRoomRepository.findById(chatRoomId).orElseThrow(() -> new CustomNotFoundException("채팅방 정보가 없습니다."));
+    public List<ChatRoomDTO> getChatRooms(Long memberId) {
+        // 현재 Team은 스터디 목록 조회에 포함 X
+
+        // 1. DB에서 회원을 찾는다.
+        Member member = memberRepository.findById(memberId).orElseThrow(() -> new CustomNotFoundException("회원을 찾을 수 없습니다."));
+
+        // 2. 회원이 개설자인 스터디 채팅방 찾기
+        List<ChatRoomDTO> chatRoomResponse = studyRepository.findAllByMember(member).stream()
+                .map(study -> {
+                    return ChatRoomMapper.INSTANCE.chatRoomEntityToDto(chatRoomRepository.findByStudyAndIsStudyApplyFalse(study).orElseThrow(() -> new CustomNotFoundException("스터디 정보를 찾을 수 없습니다.")));
+                })
+                .collect(Collectors.toList());
+
+        // 2. 회원이 참여한 모든 스터디 채팅방 찾기
+        chatRoomResponse.addAll(studyMemberRepository.findAllByMember(member).stream()
+                .map(studyMember -> {
+                    return ChatRoomMapper.INSTANCE.chatRoomEntityToDto(chatRoomRepository.findByStudyAndIsStudyApplyFalse(studyMember.getStudy()).orElseThrow(() -> new CustomNotFoundException("스터디 참여 정보를 찾을 수 없습니다.")));
+                })
+                .collect(Collectors.toList()));
+
+        return chatRoomResponse;
+
+//        List<StudyMember> studyMembers = studyMemberRepository.findAllByMember(member);
+//        List<ChatRoomDTO> chatRoomDtos = new ArrayList<>();
+//
+//        for (StudyMember studyMember : studyMembers) {
+//            Optional<ChatRoom> chatRoom = chatRoomRepository.findByStudy(studyMember.getStudy());
+//
+//            chatRoom.ifPresent(room -> {
+//                chatRoomDtos.add(ChatRoomMapper.INSTANCE.chatRoomEntityToDto(room));
+//            });
+//        }
+    }
+
+    @Transactional(readOnly = true)
+    public ChatRoomDTO getChatRoom(Long chatRoomId) {
+        return ChatRoomMapper.INSTANCE.chatRoomEntityToDto(chatRoomRepository.findById(chatRoomId).orElseThrow(() -> new CustomNotFoundException("채팅방을 찾을 수 없습니다.")));
+    }
+
+    @Transactional(readOnly = true)
+    public ChatRoomDTO getStudyApplyChatRoom(Long studyId) {
+
+        // 1. 스터디 아이디로 채팅방을 찾는다.
+        Study study = studyRepository.findById(studyId).orElseThrow(() -> new CustomNotFoundException("스터디 정보를 찾을 수 없습니다."));
+
+        ChatRoom chatRoom = chatRoomRepository.findByStudyAndIsStudyApplyTrue(study).orElseThrow(() -> new CustomNotFoundException("스터디 지원 채팅방 정보를 찾을 수 없습니다."));
+
+        return ChatRoomMapper.INSTANCE.chatRoomEntityToDto(chatRoom);
     }
 
     @Transactional
-    public void saveChatRoom(ChatRoom chatRoom) {
+    public ResponseDTO changeChatRoomTitle(Long memberId, Long chatRoomId, String title) {
+
+        // 1. DB에서 회원을 찾는다.
+        Member member = memberRepository.findById(memberId).orElseThrow(() -> new CustomNotFoundException("회원을 찾을 수 없습니다."));
+
+        // 2. 채팅룸을 찾는다.
+        ChatRoom chatRoom = chatRoomRepository.findById(chatRoomId).orElseThrow(() -> new CustomNotFoundException("채팅방 정보가 없습니다."));
+
+        // 3. 채팅룸(스터디, 팀)의 개설자가 회원이 맞는지 검사하고 타이틀을 변경한다.
+        if (chatRoom.getStudy() != null) {
+            if (member.equals(chatRoom.getStudy().getMember())) {
+                chatRoom.setName(title);
+            }
+        }
+        else {
+            if (member.equals(chatRoom.getTeam().getMember())) {
+                chatRoom.setName(title);
+            }
+        }
+
+        // 4. 업데이트
         chatRoomRepository.save(chatRoom);
+
+        return ResponseDTO.of(200, HttpStatus.OK, chatRoom.getName());
     }
 } // end class

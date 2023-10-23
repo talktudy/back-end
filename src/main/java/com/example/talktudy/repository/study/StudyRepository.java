@@ -1,5 +1,6 @@
 package com.example.talktudy.repository.study;
 
+import com.example.talktudy.repository.member.Member;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -16,6 +17,7 @@ public interface StudyRepository extends JpaRepository<Study, Long>, CustomStudy
     Page<Study> findAllByOpenTrue(Pageable pageable);
     Page<Study> findAllByOpenFalse(Pageable pageable);
     List<Study> findAllByEndDate(LocalDateTime endDate);
+    List<Study> findAllByMember(Member member);
 
 
 }

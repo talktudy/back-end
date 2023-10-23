@@ -1,7 +1,10 @@
 package com.example.talktudy.dto.chat;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
+
+import java.util.List;
 
 @Data
 public class ChatRoomDTO {
@@ -26,4 +29,8 @@ public class ChatRoomDTO {
 
     @ApiModelProperty(name = "maxCapacity", value = "총 인원", example = "5")
     private int maxCapacity;
+
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
+    @ApiModelProperty(name = "messages", value = "채팅 메세지 리스트")
+    private List<ChatMessageDTO> messages;
 }
