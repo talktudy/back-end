@@ -24,6 +24,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -137,19 +138,32 @@ public class ChatService {
         // 1. DB에서 회원을 찾는다.
         Member member = memberRepository.findById(memberId).orElseThrow(() -> new CustomNotFoundException("회원을 찾을 수 없습니다."));
 
+        // 2. 회원이 개설자인 스터디 채팅방 찾기
+        List<ChatRoomDTO> chatRoomResponse = studyRepository.findAllByMember(member).stream()
+                .map(study -> {
+                    return ChatRoomMapper.INSTANCE.chatRoomEntityToDto(chatRoomRepository.findByStudyAndIsStudyApplyFalse(study).orElseThrow(() -> new CustomNotFoundException("스터디 정보를 찾을 수 없습니다.")));
+                })
+                .collect(Collectors.toList());
+
         // 2. 회원이 참여한 모든 스터디 채팅방 찾기
-        List<StudyMember> studyMembers = studyMemberRepository.findAllByMember(member);
-        List<ChatRoomDTO> chatRoomDtos = new ArrayList<>();
+        chatRoomResponse.addAll(studyMemberRepository.findAllByMember(member).stream()
+                .map(studyMember -> {
+                    return ChatRoomMapper.INSTANCE.chatRoomEntityToDto(chatRoomRepository.findByStudyAndIsStudyApplyFalse(studyMember.getStudy()).orElseThrow(() -> new CustomNotFoundException("스터디 참여 정보를 찾을 수 없습니다.")));
+                })
+                .collect(Collectors.toList()));
 
-        for (StudyMember studyMember : studyMembers) {
-            Optional<ChatRoom> chatRoom = chatRoomRepository.findByStudy(studyMember.getStudy());
+        return chatRoomResponse;
 
-            chatRoom.ifPresent(room -> {
-                chatRoomDtos.add(ChatRoomMapper.INSTANCE.chatRoomEntityToDto(room));
-            });
-        }
-
-        return chatRoomDtos;
+//        List<StudyMember> studyMembers = studyMemberRepository.findAllByMember(member);
+//        List<ChatRoomDTO> chatRoomDtos = new ArrayList<>();
+//
+//        for (StudyMember studyMember : studyMembers) {
+//            Optional<ChatRoom> chatRoom = chatRoomRepository.findByStudy(studyMember.getStudy());
+//
+//            chatRoom.ifPresent(room -> {
+//                chatRoomDtos.add(ChatRoomMapper.INSTANCE.chatRoomEntityToDto(room));
+//            });
+//        }
     }
 
     @Transactional(readOnly = true)

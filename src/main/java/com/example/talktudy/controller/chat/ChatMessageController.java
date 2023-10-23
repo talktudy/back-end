@@ -31,5 +31,4 @@ public class ChatMessageController {
         sendingOperations.convertAndSend("/topic/api/chat/room/" + chatMessage.getChatRoomId(), chatMessage);
     }
 
-    // TODO : 채팅방 리스트 조회, 채팅방 단일 조회, 채팅방 제목 수정,
 } // End class

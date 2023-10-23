@@ -32,13 +32,13 @@ public class ChatRoomController {
         return ResponseEntity.ok(chatService.getChatRooms(customUserDetails.getMemberId()));
     }
 
-    @ApiOperation(value = "채팅방 단일 조회 api - 헤더의 토큰을 받고, 채팅방의 메세지 목록과 정보를 조회한다.")
+    @ApiOperation(value = "채팅방 단일 조회 api - 채팅룸 아이디를 받아 채팅방의 메세지 목록과 정보를 조회한다.")
     @GetMapping("/{chatRoomId}")
     public ResponseEntity<ChatRoomDTO> getChatRoomAndMessage(@PathVariable Long chatRoomId) {
         return ResponseEntity.ok(chatService.getChatRoom(chatRoomId));
     }
 
-    @ApiOperation(value = "스터디 지원 채팅방 단일 조회 api - 헤더의 토큰을 받고, 채팅방 지원의 메세지 목록과 정보를 조회한다.")
+    @ApiOperation(value = "스터디 지원 채팅방 단일 조회 api - 스터디 아이디를 받아 스터디 지원 채팅방의 메세지 목록과 정보를 조회한다.")
     @GetMapping("/study/apply/{studyId}")
     public ResponseEntity<ChatRoomDTO> getStudyApplyChatRoom(@PathVariable Long studyId) {
         return ResponseEntity.ok(chatService.getStudyApplyChatRoom(studyId));
