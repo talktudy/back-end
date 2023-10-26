@@ -19,7 +19,7 @@ public class ChatConfig implements WebSocketMessageBrokerConfigurer {
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
         // 소켓 연결과 관련된 설정. ws://localhost:8080/ws/chat로 도착할때
-        registry.addEndpoint("/api/chat").setAllowedOriginPatterns("*").withSockJS();
+        registry.addEndpoint("/chat").setAllowedOriginPatterns("*").withSockJS(); // .withSockJS();
 
         // 소켓 에러 핸들러 구현
         registry.setErrorHandler(chatErrorHandler);

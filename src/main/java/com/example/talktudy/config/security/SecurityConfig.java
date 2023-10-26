@@ -47,7 +47,7 @@ public class SecurityConfig {
                 .authorizeRequests()// 조건별로 요청 허용/제한 설정
                 .antMatchers("/api/auth/**", "/resources/static/**").permitAll() // 로그인, 회원가입 API는 permitAll()
                 //.antMatchers("/post/create").hasRole("USER") // 유저만 가능한 엔드포인트 설
-                // .antMatchers("/api/chat").authenticated()
+                //.antMatchers("/api/chat").permitAll()
                 .and()
                 .exceptionHandling()
                 .authenticationEntryPoint(customAuthenticationEntryPoint)
