@@ -18,7 +18,7 @@ public class ChatMessageController {
     private final SimpMessageSendingOperations sendingOperations;
     private final ChatMessageService chatMessageService;
 
-    @MessageMapping("/api/chat/message")
+    @MessageMapping("/chat/message")
     public void sendMessage(ChatMessageDTO chatMessage) {
         if (ChatMessageDTO.MessageType.ENTER.equals(chatMessage.getMessageType())) {
             chatMessage.setMessage(chatMessage.getNickname() + "님이 입장하였습니다.");
@@ -28,7 +28,7 @@ public class ChatMessageController {
 
         chatMessageService.saveMessage(chatMessage);
 
-        sendingOperations.convertAndSend("/topic/api/chat/room/" + chatMessage.getChatRoomId(), chatMessage);
+        sendingOperations.convertAndSend("/topic/chat/room/" + chatMessage.getChatRoomId(), chatMessage);
     }
 
 } // End class
