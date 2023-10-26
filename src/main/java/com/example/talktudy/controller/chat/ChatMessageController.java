@@ -26,9 +26,9 @@ public class ChatMessageController {
             chatMessage.setMessage(chatMessage.getNickname() + "님이 퇴장하셨습니다.");
         }
 
-        chatMessageService.saveMessage(chatMessage);
+        ChatMessageDTO response = chatMessageService.saveMessage(chatMessage);
 
-        sendingOperations.convertAndSend("/topic/chat/room/" + chatMessage.getChatRoomId(), chatMessage);
+        sendingOperations.convertAndSend("/topic/chat/room/" + response.getChatRoomId(), response);
     }
 
 } // End class

@@ -25,7 +25,7 @@ public class ChatMessageService {
     private final ChatRoomRepository chatRoomRepository;
 
     @Transactional
-    public void saveMessage(ChatMessageDTO chatMessage) {
+    public ChatMessageDTO saveMessage(ChatMessageDTO chatMessage) {
         // 1. DB에서 회원을 찾는다.
         Member member = memberRepository.findByEmail(chatMessage.getEmail()).orElseThrow(() -> new CustomNotFoundException("회원을 찾을 수 없습니다."));
 
@@ -33,7 +33,7 @@ public class ChatMessageService {
         ChatRoom chatRoom = chatRoomRepository.findById(chatMessage.getChatRoomId()).orElseThrow(() -> new CustomNotFoundException("채팅방 정보를 찾을 수 없습니다."));
 
         // 3. ChatMessage 객체 생성
-        ChatMessage newChatMessage = ChatMessage.builder()
+        ChatMessage chat = ChatMessage.builder()
                 .chatRoom(chatRoom)
                 .member(member)
                 .message(chatMessage.getMessage())
@@ -41,6 +41,18 @@ public class ChatMessageService {
                 .build();
 
         // 4. 저장
-        chatMessageRepository.save(newChatMessage);
+        ChatMessage newChatMessage = chatMessageRepository.save(chat);
+
+        ChatMessageDTO chatMessageDTO = new ChatMessageDTO();
+        chatMessageDTO.setChatMessageId(newChatMessage.getChatMessageId());
+        chatMessageDTO.setMessageType(chatMessage.getMessageType());
+        chatMessageDTO.setChatRoomId(newChatMessage.getChatRoom().getChatRoomId());
+        chatMessageDTO.setEmail(newChatMessage.getMember().getEmail());
+        chatMessageDTO.setNickname(newChatMessage.getMember().getNickname());
+        chatMessageDTO.setMessage(newChatMessage.getMessage());
+        chatMessageDTO.setProfileImageUrl(newChatMessage.getMember().getProfileImageUrl());
+        chatMessageDTO.setSentDate(newChatMessage.getSentDate());
+
+        return chatMessageDTO;
     }
 } // end class
