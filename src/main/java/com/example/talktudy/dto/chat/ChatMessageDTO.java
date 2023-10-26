@@ -13,7 +13,6 @@ public class ChatMessageDTO {
     @ApiModelProperty(name = "chatMessageId", value = "메세지 아이디", example = "1")
     private Long chatMessageId;
 
-    @JsonIgnore
     @ApiModelProperty(name = "messageType", value = "채팅 메세지의 타입 : ENTER(입장시), TALK(대화), LEAVE(퇴장시)", example = "ENTER")
     private MessageType messageType;
 
