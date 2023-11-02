@@ -1,5 +1,5 @@
 # :speech_balloon: Talktudy
-스터디 모집 커뮤니티 프로젝트 톡터디
+스터디를 모집하고 실시간 단체 채팅방에 참여할 수 있는 스터디 채팅 커뮤니티
 
 :earth_africa: 웹 배포 링크 :
 <br/>
