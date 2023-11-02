@@ -7,6 +7,7 @@ import com.example.talktudy.security.CustomUserDetails;
 import com.example.talktudy.service.member.MemberService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
 import io.swagger.annotations.ApiResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -42,5 +43,4 @@ public class MemberController {
     public ResponseEntity<ResponseDTO> changePassword(@ApiIgnore @AuthenticationPrincipal CustomUserDetails customUserDetails, @RequestBody PasswordRequest passwordRequest) {
         return ResponseEntity.ok(memberService.changePassword(customUserDetails.getMemberId(), passwordRequest.getOldPassword(), passwordRequest.getNewPassword()));
     }
-
 } // end class

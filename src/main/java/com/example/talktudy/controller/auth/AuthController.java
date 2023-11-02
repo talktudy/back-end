@@ -7,6 +7,7 @@ import com.example.talktudy.dto.common.ResponseDTO;
 import com.example.talktudy.service.auth.AuthService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -31,6 +32,15 @@ public class AuthController {
     @PostMapping(value = "/register")
     public ResponseEntity<ResponseDTO> register(MemberDTO memberDTO) {
         return ResponseEntity.ok(authService.register(memberDTO));
+    }
+
+    @ApiOperation("회원 이메일 중복체크 api - 중복된 이메일을 체크한다.")
+    @GetMapping("/check-email")
+    public ResponseEntity<ResponseDTO> checkEmail(
+            @ApiParam(value = "이메일 - DB에 이메일이 존재하면 true, 존재하지 않으면 false", required = true)
+            @RequestParam String email
+    ) {
+        return ResponseEntity.ok(authService.checkEmail(email));
     }
 
     @ApiOperation(value = "로그인 api - 이메일과 패스워드를 입력받아 로그인", notes = "access token과 refresh token이 리턴되며, 클라이언트에 갖고 있습니다.")
