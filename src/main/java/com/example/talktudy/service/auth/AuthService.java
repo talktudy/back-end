@@ -50,7 +50,7 @@ public class AuthService {
 
         // 1. DB에 해당 이메일의 회원이 존재하는지 검사
         if (memberRepository.existsByEmail(email)) {
-            throw new IllegalArgumentException("회원이 이미 존재합니다.");
+            throw new CustomNotFoundException("회원이 이미 존재합니다.");
         }
 
         // 2. 회원 객체 생성
@@ -82,6 +82,18 @@ public class AuthService {
 
         return ResponseDTO.of(200, HttpStatus.OK, "회원 등록에 성공하였습니다.");
 
+    }
+
+    @Transactional(readOnly = true)
+    public ResponseDTO checkEmail(String email) {
+
+        // 1. DB에 해당 이메일의 회원이 존재하는지 검사
+        if (memberRepository.existsByEmail(email)) {
+            return ResponseDTO.of(409, HttpStatus.CONFLICT, "해당 이메일의 회원이 이미 존재합니다.");
+        }
+        else {
+            return ResponseDTO.of(200, HttpStatus.OK, "해당 이메일로 회원 가입이 가능합니다.");
+        }
     }
 
     @Transactional
