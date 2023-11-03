@@ -1,7 +1,7 @@
 # :speech_balloon: Talktudy
 스터디를 모집하고 실시간 단체 채팅방에 참여할 수 있는 스터디 채팅 커뮤니티
 
-:earth_africa: 웹 배포 링크 :
+:earth_africa: 웹 배포 링크 : https://front-end-mu-lime.vercel.app/
 <br/>
 :clipboard: 기획서 : https://www.notion.so/52f01880f29245f1a6c5e8c79b543257?pvs=4
 
