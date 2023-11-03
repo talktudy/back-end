@@ -16,7 +16,6 @@
       <td align="center"><b> FE : 염승준 </b></td>
       <td align="center"><b> FE : 김예슬 </b></td>
       <td align="center"><b> FE : 방선주 </b></td>
-      <td align="center"><b> FE : 이효민 </b></td>
     </tr>
   </tbody>
 </table>
